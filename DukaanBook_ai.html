@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DukaanBook AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg-dark: #0f172a;
+            --surface: rgba(30, 41, 59, 0.7);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, #0f172a);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .chat-card {
+            width: 95%; max-width: 850px; height: 90vh;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            padding: 20px 24px;
+            background: rgba(15, 23, 42, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; align-items: center; gap: 14px;
+        }
+
+        .avatar {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #3b82f6, #2dd4bf);
+            border-radius: 12px;
+            display: grid; place-items: center; font-size: 22px;
+        }
+
+        #chatWindow {
+            flex: 1; padding: 24px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .message { display: flex; gap: 12px; max-width: 85%; animation: fadeIn 0.3s ease; }
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+
+        .bubble {
+            padding: 14px 18px; border-radius: 18px; font-size: 15px; line-height: 1.6;
+            background: #2d3748; border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .user .bubble { background: var(--primary); border: none; }
+
+        .input-bar {
+            padding: 20px 24px; background: rgba(15, 23, 42, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; gap: 12px;
+        }
+
+        input {
+            flex: 1; background: #1e293b; border: 1px solid #334155;
+            border-radius: 12px; padding: 14px; color: white; outline: none;
+            font-size: 16px;
+        }
+
+        .send-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 0 24px; border-radius: 12px; font-weight: 700; cursor: pointer;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="chat-card">
+        <header>
+            <button onclick="window.location.href='DukaanBook_profile.html'" style="background: var(--primary); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-right: 10px;">Back</button>
+            <div class="avatar">🤖</div>
+            <div>
+                <h2 style="font-size: 16px; margin: 0;">DukaanBook Support AI</h2>
+                <div style="font-size: 12px; color: var(--accent-green);">● High-Precision Expert Active</div>
+            </div>
+        </header>
+
+        <div id="chatWindow">
+            <div class="message ai">
+                <div class="bubble">
+                    Namaste! 🙏 I'm your dedicated DukaanBook Assistant. I've been updated to provide exact answers on <b>GST</b>, <b>Trial Policies</b>, and <b>Inventory Features</b>. How can I help you?
+                </div>
+            </div>
+        </div>
+
+        <div class="input-bar">
+            <input type="text" id="userInput" placeholder="Ask 'why extra GST?' or 'is trial free?'" autocomplete="off">
+            <button class="send-btn" id="sendBtn">Ask AI</button>
+        </div>
+    </div>
+
+    <script>
+        // Apply Theme
+        const savedTheme = localStorage.getItem('db_theme_intensity');
+        if (savedTheme !== null) {
+            const val = parseInt(savedTheme);
+            const maxL = 90;
+            const minL = 30;
+            const lightness = minL + ((maxL - minL) * (val / 100));
+            document.documentElement.style.setProperty('--primary', `hsl(211, 56%, ${lightness}%)`);
+        }
+
+        const chatWindow = document.getElementById('chatWindow');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        let lastIntent = null;
+
+        function addMessage(text, isUser = false) {
+            const msg = document.createElement('div');
+            msg.className = `message ${isUser ? 'user' : 'ai'}`;
+            msg.innerHTML = `<div class="bubble">${text}</div>`;
+            chatWindow.appendChild(msg);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function getAIResponse(input) {
+            const q = input.toLowerCase().trim();
+
+            // 1. SPECIFIC GST LOGIC
+            if (q.includes("why") && q.includes("gst")) {
+                return "The <b>18% GST</b> is a standard government tax requirement for all software services in India. It is applied on top of the base plan price and will be clearly shown on your tax invoice for your business records.";
+            }
+            if (q.includes("what is the gst") || q.includes("how much gst")) {
+                return "DukaanBook applies a standard <b>18% GST</b> on all paid plans. For example, on the Monthly Plan (₹69), the GST is ₹12.42, making your total ₹81.42.";
+            }
+
+            // 2. SPECIFIC TRIAL LOGIC
+            if (q.includes("trial") && (q.includes("free") || q.includes("actually"))) {
+                return "Yes! The <b>7-day trial is 100% free</b>. You don't even need to enter credit card details to start. You get full access to all features to see how DukaanBook fits your shop.";
+            }
+
+            // 3. SECURITY & LOGIN
+            if (q.includes("20 day") || q.includes("login rule")) {
+                lastIntent = "security";
+                return "DukaanBook has a <b>20-day re-verification policy</b>. If you haven't logged in for 20 days, you must re-verify using Aadhaar OTP or a Trade License to protect your shop's data from unauthorized access.";
+            }
+            if ((q.includes("skip") || q.includes("avoid")) && lastIntent === "security") {
+                return "No, the 20-day re-verification is <b>mandatory</b> for your security. It ensures your account remains private even if your device is changed or lost.";
+            }
+
+            // 4. PLAN COMPARISONS
+            if (q.includes("best plan") || q.includes("which plan")) {
+                return "For most Indian shops, the <b>Annual Plan (₹999/yr)</b> is best. It saves you money (₹229 less than monthly) and is the only plan that includes <b>SMS Expiry Alerts</b>.";
+            }
+
+            // 5. INVENTORY & LABELS
+            if (q.includes("add inventory") || q.includes("how to add")) {
+                return "Click the blue <b>'+ Add Item'</b> button in the sidebar. You can use the <b>Barcode Scanner</b> to fill details instantly or enter them manually.";
+            }
+            if (q.includes("label") || q.includes("lebel")) {
+                return "Yes, you can create custom <b>Labels</b>! Go to the sidebar and click <b>'New Label'</b>. Pick a color and name to group your items like 'Dairy' or 'Snacks'.";
+            }
+
+            // 6. EXPIRY ALERTS
+            if (q.includes("expiry") || q.includes("color")) {
+                return "We use color-coded alerts:<br>• 🔴 <b>Urgent:</b> <5 days left<br>• 🟡 <b>Warning:</b> 5-7 days left<br>• 🟢 <b>Reminder:</b> 7-10 days left.";
+            }
+
+            // GREETINGS
+            if (["hi", "hello", "hey", "namaste"].some(g => q.startsWith(g))) {
+                return "Namaste! 🙏 I'm your sharp DukaanBook Assistant. Ask me specifically about <b>GST</b>, the <b>free trial</b>, or <b>security rules</b>!";
+            }
+
+            return "I'm not quite sure about that. Try asking specifically about <b>'Why extra GST?'</b>, <b>'Is the trial free?'</b>, or <b>'How to add labels?'</b>";
+        }
+
+        async function handleSend() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            addMessage(text, true);
+            userInput.value = '';
+            setTimeout(() => { addMessage(getAIResponse(text), false); }, 500);
+        }
+
+        sendBtn.onclick = handleSend;
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+    </script>
+</body>
+</html>

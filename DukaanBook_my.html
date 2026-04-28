@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - DukaanBook</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Nunito:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #2a5282;
+      --surface: #ffffff;
+      --surface-2: #f7f9fc;
+      --surface-3: #eef2f8;
+      --border: #d0d9e8;
+      --text: #1a202c;
+      --text-2: #4a5568;
+      --text-3: #718096;
+      --accent: #2b6cb0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --green: #38a169;
+      --green-bg: #f0fff4;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface-2);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar {
+      height: 58px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .back-btn:hover {
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 32px auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card-header {
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: var(--green-bg);
+      color: var(--green);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface-3);
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-top: 4px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      background: var(--surface-2);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+    }
+
+    /* Theme preview */
+    .theme-slider {
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <a href="DukaanBook_profile.html" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back to Dashboard
+    </a>
+  </header>
+
+  <div class="container">
+
+    <!-- Business Identity & Verification -->
+    <div class="card">
+      <div class="card-header">
+        Business Identity
+        <span class="badge" id="verificationBadge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Verified
+        </span>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Shop Name</span>
+          <span class="info-value" id="dispShopName">Loading...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Owner Name</span>
+          <span class="info-value" id="dispOwnerName">Loading...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Category</span>
+          <span class="info-value" id="dispCategory">General Store</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="card">
+      <div class="card-header">Contact Info</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Registered Phone / Email</span>
+          <span class="info-value" id="dispEmail">Loading...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Membership Details -->
+    <div class="card">
+      <div class="card-header">Membership Details</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Current Plan</span>
+          <span class="info-value" id="dispPlan">7-Day Free Trial</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Expiry Date</span>
+          <span class="info-value" id="dispPlanExpiry">May 5, 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="card">
+      <div class="card-header">Quick Stats</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="dispTotalItems">0</div>
+          <div class="stat-label">Total Items in Inventory</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="dispTotalSales">₹0.00</div>
+          <div class="stat-label">Total Sales Value</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shop Settings -->
+    <div class="card">
+      <div class="card-header">Shop Settings</div>
+      <div class="form-group">
+        <label>Shop Name</label>
+        <input type="text" id="editShopName" placeholder="Enter shop name...">
+      </div>
+      <div class="form-group">
+        <label>Owner Name</label>
+        <input type="text" id="editOwnerName" placeholder="Enter owner name...">
+      </div>
+      <div class="form-group">
+        <label>Registered Phone / Email</label>
+        <input type="text" id="editEmail" placeholder="Enter phone or email...">
+      </div>
+      <div class="form-group">
+        <label>Shop Address</label>
+        <input type="text" id="shopAddress" placeholder="Enter full shop address...">
+      </div>
+      <div class="form-group">
+        <label>Shop Category</label>
+        <select id="shopCategory">
+          <option>General Store</option>
+          <option>Pharmacy</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Theme Intensity (Whitish-Blue)</label>
+        <input type="range" id="themeIntensity" class="theme-slider" min="0" max="100" value="50">
+        <span style="font-size:12px;color:var(--text-3);margin-top:4px" id="intensityLabel">50%</span>
+      </div>
+
+      <div id="guestWarning"
+        style="color:#856404; background-color:#fff3cd; font-size:13px; font-weight: 500; margin-bottom: 16px; padding: 10px; border-radius: 6px; border: 1px solid #ffeeba; display:none;">
+        Note: Guest users cannot change their registered phone/email. Please login and verify to update your login details.
+      </div>
+      <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Load data from localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const name = localStorage.getItem('db_name') || 'Guest User';
+      const shop = localStorage.getItem('db_shop') || 'My Shop';
+      const email = localStorage.getItem('db_email') || 'Not provided';
+      const address = localStorage.getItem('db_address') || '';
+      const category = localStorage.getItem('db_category') || 'General Store';
+
+      const verifiedType = localStorage.getItem('db_verified');
+      const badge = document.getElementById('verificationBadge');
+      if (verifiedType === 'aadhaar') {
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      document.getElementById('dispOwnerName').textContent = name;
+      document.getElementById('dispShopName').textContent = shop;
+      document.getElementById('dispEmail').textContent = email;
+      document.getElementById('dispCategory').textContent = category;
+
+      document.getElementById('editShopName').value = shop;
+      document.getElementById('editOwnerName').value = name;
+      document.getElementById('editEmail').value = email;
+      document.getElementById('shopAddress').value = address;
+      document.getElementById('shopCategory').value = category;
+
+      const isGuest = localStorage.getItem('db_is_guest') === 'true' || email === 'Guest User';
+      if (isGuest) {
+        document.getElementById('editEmail').disabled = true;
+        document.getElementById('guestWarning').style.display = 'block';
+      }
+
+      // Membership details
+      const plan = localStorage.getItem('db_plan') || '7-Day Free Trial';
+      let defaultExpiry = new Date();
+      defaultExpiry.setDate(defaultExpiry.getDate() + 7);
+      const planExpiry = localStorage.getItem('db_plan_expiry') || defaultExpiry.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      document.getElementById('dispPlan').textContent = plan;
+      document.getElementById('dispPlanExpiry').textContent = planExpiry;
+
+      // Accurate stats from inventory
+      const inventory = JSON.parse(localStorage.getItem('db_inventory') || '[]');
+      const soldItems = JSON.parse(localStorage.getItem('db_sold_items') || '[]');
+
+      document.getElementById('dispTotalItems').textContent = inventory.length;
+
+      let totalSales = 0;
+      soldItems.forEach(item => {
+        totalSales += (parseFloat(item.mrp || 0) * parseInt(item.quantity || 1));
+      });
+      document.getElementById('dispTotalSales').textContent = '₹' + totalSales.toFixed(2);
+
+      const savedTheme = localStorage.getItem('db_theme_intensity');
+      if (savedTheme !== null) {
+        document.getElementById('themeIntensity').value = savedTheme;
+        document.getElementById('intensityLabel').textContent = savedTheme + '%';
+        applyTheme(savedTheme);
+      }
+    });
+
+    function applyTheme(val) {
+      const maxL = 90;
+      const minL = 30;
+      const lightness = minL + ((maxL - minL) * (val / 100));
+      document.documentElement.style.setProperty('--primary', `hsl(211, 56%, ${lightness}%)`);
+    }
+
+    function saveSettings() {
+      const isGuest = localStorage.getItem('db_is_guest') === 'true' || localStorage.getItem('db_email') === 'Guest User';
+      const addr = document.getElementById('shopAddress').value;
+      const cat = document.getElementById('shopCategory').value;
+      const themeVal = document.getElementById('themeIntensity').value;
+
+      const newShopName = document.getElementById('editShopName').value;
+      const newOwnerName = document.getElementById('editOwnerName').value;
+      const newEmail = document.getElementById('editEmail').value;
+
+      localStorage.setItem('db_theme_intensity', themeVal);
+
+      localStorage.setItem('db_address', addr);
+      localStorage.setItem('db_category', cat);
+
+      localStorage.setItem('db_shop', newShopName);
+      localStorage.setItem('db_name', newOwnerName);
+
+      document.getElementById('dispCategory').textContent = cat;
+      document.getElementById('dispShopName').textContent = newShopName;
+      document.getElementById('dispOwnerName').textContent = newOwnerName;
+
+      if (!isGuest) {
+        localStorage.setItem('db_email', newEmail);
+        document.getElementById('dispEmail').textContent = newEmail;
+      }
+
+      alert('Settings saved successfully!');
+    }
+
+    const themeSlider = document.getElementById('themeIntensity');
+    const intensityLabel = document.getElementById('intensityLabel');
+    themeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      intensityLabel.textContent = val + '%';
+      applyTheme(val);
+    });
+  </script>
+</body>
+
+</html>

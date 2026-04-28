@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DukaanBook – Simple Pricing for Smart Shopkeepers</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#16a34a;--g2:#15803d;--g3:#dcfce7;--g4:#f0fdf4;--g5:#bbf7d0;
+  --t:#0f172a;--t2:#475569;--t3:#94a3b8;
+  --bg:#ffffff;--bg2:#f8fafc;--bg3:#f1f5f9;
+  --bdr:#e2e8f0;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-bdr:#fde68a;
+  --r:14px;--r2:20px;
+  --ff:'Plus Jakarta Sans',sans-serif;--fs:'Lora',serif;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+  --sh2:0 4px 24px rgba(22,163,74,.18),0 1px 4px rgba(22,163,74,.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);color:var(--t);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{background:white;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:50}
+.nav-inner{max-width:1080px;margin:auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--ff);font-weight:800;font-size:20px;color:var(--g);display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;background:var(--g);border-radius:8px;display:grid;place-items:center}
+.logo-mark svg{width:16px;height:16px;fill:white}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-link{font-size:14px;color:var(--t2);text-decoration:none;font-weight:500;display:none}
+@media(min-width:600px){.nav-link{display:block}.logo-text{display:inline!important}}
+.btn-sm{background:var(--g);color:white;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;text-decoration:none;font-family:var(--ff)}
+
+/* HERO */
+.hero{text-align:center;padding:64px 20px 48px;background:var(--g4);border-bottom:1px solid var(--g5)}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--g3);color:#166534;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--g);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(26px,5vw,44px);font-weight:800;line-height:1.2;margin-bottom:14px;color:var(--t)}
+.hero h1 span{color:var(--g)}
+.hero p{font-size:16px;color:var(--t2);max-width:500px;margin:0 auto}
+
+/* TOGGLE */
+.toggle-wrap{display:inline-flex;background:var(--bg3);border-radius:50px;padding:4px;gap:4px;border:1px solid var(--bdr)}
+.tab-btn{font-family:var(--ff);font-size:13px;font-weight:600;padding:8px 18px;border-radius:40px;border:none;cursor:pointer;transition:all .25s;color:var(--t2);background:transparent;position:relative}
+.tab-btn.active{background:var(--g);color:white;box-shadow:0 2px 8px rgba(22,163,74,.35)}
+.tab-btn .save-chip{position:absolute;top:-10px;right:-6px;background:var(--amber);color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;white-space:nowrap}
+
+/* PRICING SECTION */
+.pricing-section{padding:56px 20px;max-width:1080px;margin:auto}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;align-items:start}
+
+/* PLAN CARDS */
+.plan-card{background:white;border-radius:var(--r2);border:1.5px solid var(--bdr);padding:28px 24px;position:relative;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s ease}
+.plan-card:hover{transform:translateY(-10px) scale(1.03);box-shadow:0 20px 48px rgba(0,0,0,.13)}
+.plan-card.featured{border-color:var(--g);border-width:2px;box-shadow:var(--sh2)}
+.plan-card.featured:hover{box-shadow:0 20px 48px rgba(22,163,74,.25)}
+.featured-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--g);color:white;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;white-space:nowrap;letter-spacing:.04em}
+.trial-banner{background:var(--g4);border:1.5px dashed var(--g5);border-radius:var(--r2);padding:28px 24px;text-align:center;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s ease}
+.trial-banner:hover{transform:translateY(-10px) scale(1.03);box-shadow:0 20px 48px rgba(0,0,0,.10)}
+.trial-icon{width:56px;height:56px;background:var(--g3);border-radius:16px;display:grid;place-items:center;margin:0 auto 16px}
+.trial-icon svg{width:28px;height:28px;fill:var(--g)}
+.trial-banner h3{font-size:18px;font-weight:800;margin-bottom:6px}
+.trial-banner p{font-size:14px;color:var(--t2);margin-bottom:20px}
+.plan-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g);margin-bottom:10px}
+.plan-name{font-size:20px;font-weight:800;margin-bottom:4px}
+.plan-tagline{font-size:13px;color:var(--t2);margin-bottom:20px;min-height:36px}
+.price-row{display:flex;align-items:baseline;gap:4px;margin-bottom:6px}
+.price-sym{font-size:18px;font-weight:700;color:var(--t)}
+.price-amt{font-size:40px;font-weight:800;line-height:1;color:var(--t)}
+.price-period{font-size:13px;color:var(--t3)}
+.savings-pill{display:inline-block;background:var(--amber-bg);border:1px solid var(--amber-bdr);color:var(--amber);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:16px}
+.plan-divider{border:none;border-top:1px solid var(--bdr);margin:16px 0}
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.feat-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--t2)}
+.feat-icon{width:20px;height:20px;border-radius:6px;background:var(--g3);display:grid;place-items:center;flex-shrink:0;margin-top:1px}
+.feat-icon svg{width:11px;height:11px;fill:var(--g)}
+.feat-label{line-height:1.4}
+.plan-cta{display:block;text-align:center;padding:13px 20px;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;font-family:var(--ff);transition:all .2s;cursor:pointer;border:none;width:100%}
+.cta-green{background:var(--g);color:white}
+.cta-green:hover{background:var(--g2);transform:translateY(-1px)}
+.cta-outline{background:transparent;color:var(--g);border:2px solid var(--g)}
+.cta-outline:hover{background:var(--g4)}
+.cta-trial{background:var(--g);color:white;font-size:15px;padding:13px 28px;border-radius:10px;font-weight:700;font-family:var(--ff);border:none;cursor:pointer;transition:all .2s;width:100%}
+.cta-trial:hover{background:var(--g2)}
+
+/* HIDDEN PLAN LOGIC */
+.plan-card[data-plan]{transition:opacity .3s,transform .3s}
+
+/* COMPARISON TABLE */
+.compare-section{padding:0 20px 64px;max-width:1080px;margin:auto}
+.section-head{text-align:center;margin-bottom:32px}
+.section-head h2{font-size:clamp(20px,3vw,28px);font-weight:800;margin-bottom:8px}
+.section-head p{font-size:15px;color:var(--t2)}
+.table-wrap{overflow-x:auto;border-radius:var(--r2);border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;min-width:560px}
+thead tr{background:var(--bg2)}
+th{padding:14px 16px;font-size:13px;font-weight:700;color:var(--t2);text-align:center;border-bottom:1px solid var(--bdr)}
+th:first-child{text-align:left}
+td{padding:12px 16px;font-size:14px;color:var(--t2);text-align:center;border-bottom:1px solid var(--bg3)}
+td:first-child{text-align:left;color:var(--t);font-weight:500}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even){background:var(--bg2)}
+.col-feat{background:var(--g4)!important}
+.check{color:var(--g);font-size:16px}
+.cross{color:var(--t3);font-size:16px}
+.col-hdr{color:var(--g)!important;font-weight:800!important;font-size:14px!important}
+
+/* FAQ */
+.faq-section{padding:0 20px 80px;max-width:680px;margin:auto}
+.faq-item{border-bottom:1px solid var(--bdr);overflow:hidden}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:18px 4px;font-family:var(--ff);font-size:15px;font-weight:600;color:var(--t);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-q .icon{width:24px;height:24px;border-radius:50%;background:var(--g3);display:grid;place-items:center;flex-shrink:0;transition:transform .25s}
+.faq-q .icon svg{width:12px;height:12px;fill:var(--g);transition:transform .25s}
+.faq-q.open .icon{background:var(--g);transform:rotate(0)}
+.faq-q.open .icon svg{fill:white;transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .25s}
+.faq-a.open{max-height:300px;padding-bottom:16px}
+.faq-a p{font-size:14px;color:var(--t2);line-height:1.7;padding:0 4px}
+
+/* CTA BANNER */
+.cta-banner{background:var(--g);margin:0 20px;border-radius:var(--r2);padding:48px 32px;text-align:center;margin-bottom:64px;max-width:1040px;margin-left:auto;margin-right:auto;position:relative;overflow:hidden}
+.cta-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:rgba(255,255,255,.06);border-radius:50%}
+.cta-banner::after{content:'';position:absolute;bottom:-80px;left:-40px;width:280px;height:280px;background:rgba(255,255,255,.04);border-radius:50%}
+.cta-banner h2{font-size:clamp(20px,3vw,30px);font-weight:800;color:white;margin-bottom:10px;position:relative;z-index:1}
+.cta-banner p{font-size:15px;color:rgba(255,255,255,.85);margin-bottom:28px;position:relative;z-index:1}
+.cta-banner-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.btn-white{background:white;color:var(--g);font-family:var(--ff);font-weight:700;font-size:15px;padding:13px 28px;border-radius:10px;border:none;cursor:pointer;text-decoration:none;transition:all .2s}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.15)}
+.btn-ghost2{background:transparent;color:white;font-family:var(--ff);font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;border:2px solid rgba(255,255,255,.5);cursor:pointer;text-decoration:none;transition:all .2s}
+.btn-ghost2:hover{background:rgba(255,255,255,.1)}
+
+/* FOOTER */
+footer{background:#0d1f13;color:#6b9e7a;text-align:center;padding:28px 20px;font-size:13px}
+footer a{color:#4dd98a;text-decoration:none}
+
+/* HOME LOGO */
+.home-logo{position:absolute;left:20px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--ff);font-weight:800;font-size:17px;color:var(--g)}
+.home-logo-mark{width:30px;height:30px;background:var(--g);border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.home-logo-mark svg{width:16px;height:16px;fill:white}
+.home-logo:hover{opacity:.85}
+
+/* ═══════════════════════════════════════════
+   PAYMENT GATEWAY — Razorpay style
+═══════════════════════════════════════════ */
+#payment{display:none;min-height:100vh;background:#f0f4f8;padding:0}
+#payment.active{display:block}
+
+.gw-wrap{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
+@media(max-width:780px){.gw-wrap{grid-template-columns:1fr;min-height:auto}}
+
+/* LEFT PANEL */
+.gw-left{background:linear-gradient(175deg,#0f5235 0%,#16a34a 100%);color:white;padding:32px 28px;display:flex;flex-direction:column;gap:0}
+.gw-brand{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.gw-brand-icon{width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:10px;display:grid;place-items:center}
+.gw-brand-icon svg{width:18px;height:18px;fill:white}
+.gw-brand-name{font-size:18px;font-weight:800}
+.gw-plan-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:14px 16px;margin-bottom:24px}
+.gw-plan-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.7;margin-bottom:4px}
+.gw-plan-name{font-size:17px;font-weight:700;margin-bottom:2px}
+.gw-plan-sub{font-size:13px;opacity:.75}
+.gw-amount-box{margin-bottom:32px}
+.gw-amount-label{font-size:12px;opacity:.7;margin-bottom:4px}
+.gw-amount{font-size:42px;font-weight:800;line-height:1}
+.gw-amount span{font-size:20px;vertical-align:top;margin-top:6px;display:inline-block}
+.gw-amount-note{font-size:12px;opacity:.6;margin-top:4px}
+.gw-breakdown{display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
+.gw-row{display:flex;justify-content:space-between;font-size:13px;opacity:.8}
+.gw-row.total{opacity:1;font-weight:700;font-size:15px;border-top:1px solid rgba(255,255,255,.2);padding-top:10px;margin-top:4px}
+.gw-secure{margin-top:auto;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.6}
+.gw-secure svg{width:14px;height:14px;fill:white}
+.gw-back{background:none;border:none;color:rgba(255,255,255,.75);font-family:var(--ff);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:0;margin-bottom:24px;transition:opacity .2s}
+.gw-back:hover{opacity:1}
+
+/* RIGHT PANEL */
+.gw-right{background:white;display:flex;flex-direction:column}
+.gw-right-inner{padding:32px 32px;flex:1}
+@media(max-width:780px){.gw-right-inner{padding:24px 20px}}
+
+/* METHOD TABS */
+.gw-tabs{display:flex;border-bottom:2px solid #e2e8f0;margin-bottom:0;gap:0}
+.gw-tab{flex:1;padding:14px 8px;font-family:var(--ff);font-size:13px;font-weight:600;color:#94a3b8;background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.gw-tab:hover{color:#475569}
+.gw-tab.active{color:var(--g);border-bottom-color:var(--g)}
+.gw-tab-icon{font-size:18px}
+.gw-tab-label{font-size:11px}
+
+/* PANELS */
+.gw-panel{display:none;padding-top:24px}
+.gw-panel.active{display:block}
+
+/* UPI APPS */
+.upi-apps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:500px){.upi-apps-grid{grid-template-columns:repeat(2,1fr)}}
+.upi-app-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;border-radius:14px;border:2px solid #e2e8f0;background:white;cursor:pointer;transition:all .2s;font-family:var(--ff)}
+.upi-app-btn:hover{border-color:var(--g);background:#f0fdf4;transform:translateY(-2px)}
+.upi-app-btn.active{border-color:var(--g);background:#f0fdf4;box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+.upi-app-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.upi-app-name{font-size:12px;font-weight:600;color:#374151}
+/* UPI brand colours */
+.icon-phonepe{background:linear-gradient(135deg,#5f259f,#7b3fc4)}
+.icon-gpay{background:linear-gradient(135deg,#4285f4,#34a853)}
+.icon-paytm{background:linear-gradient(135deg,#00baf2,#0066b3)}
+.icon-bhim{background:linear-gradient(135deg,#ff6200,#f5a623)}
+.upi-app-icon svg{width:32px;height:32px}
+
+.upi-id-section{background:#f8fafc;border-radius:12px;padding:16px;border:1px solid #e2e8f0}
+.upi-id-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:8px}
+.upi-id-row{display:flex;gap:8px}
+.upi-id-input{flex:1;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:var(--ff);outline:none;transition:border .2s}
+.upi-id-input:focus{border-color:var(--g)}
+.upi-verify-btn{padding:11px 18px;background:var(--g);color:white;border:none;border-radius:10px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s}
+.upi-verify-btn:hover{background:var(--g2)}
+.upi-or{text-align:center;color:#94a3b8;font-size:13px;margin:16px 0;position:relative}
+.upi-or::before,.upi-or::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:#e2e8f0}
+.upi-or::before{left:0}
+.upi-or::after{right:0}
+.upi-qr-box{border:2px dashed #d1d5db;border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s}
+.upi-qr-box:hover{border-color:var(--g);background:#f0fdf4}
+.upi-qr-inner{display:flex;flex-direction:column;align-items:center;gap:8px;color:#6b7280;font-size:13px}
+.upi-qr-inner svg{width:48px;height:48px;fill:#d1d5db}
+
+/* NET BANKING */
+.nb-popular{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.nb-bank-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:2px solid #e2e8f0;background:white;cursor:pointer;transition:all .2s;font-family:var(--ff);text-align:left}
+.nb-bank-btn:hover{border-color:var(--g);background:#f0fdf4}
+.nb-bank-btn.active{border-color:var(--g);background:#f0fdf4;box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+.nb-bank-icon{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.nb-bank-name{font-size:13px;font-weight:600;color:#374151}
+.nb-bank-type{font-size:11px;color:#94a3b8}
+.nb-other-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:8px}
+.nb-select{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:var(--ff);outline:none;color:#374151;background:white;cursor:pointer}
+.nb-select:focus{border-color:var(--g)}
+
+/* CARD */
+.card-visual{background:linear-gradient(135deg,#1e293b,#334155);border-radius:16px;padding:20px 22px;margin-bottom:24px;color:white;position:relative;overflow:hidden;min-height:120px}
+.card-visual::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.05);border-radius:50%}
+.card-visual::after{content:'';position:absolute;bottom:-20px;left:-20px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%}
+.card-chip{width:32px;height:24px;background:linear-gradient(135deg,#d4a843,#f0c060);border-radius:5px;margin-bottom:16px}
+.card-number-display{font-size:16px;letter-spacing:.12em;font-family:monospace;opacity:.9;margin-bottom:12px}
+.card-bottom{display:flex;justify-content:space-between;font-size:12px;opacity:.7}
+.gw-input-group{margin-bottom:16px}
+.gw-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;display:block}
+.gw-input{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;font-family:var(--ff);outline:none;transition:border .2s;color:#0f172a}
+.gw-input:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(22,163,74,.08)}
+.gw-input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* PAY BUTTON */
+.gw-pay-btn{width:100%;padding:15px;background:var(--g);color:white;border:none;border-radius:12px;font-family:var(--ff);font-size:16px;font-weight:700;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+.gw-pay-btn:hover:not(:disabled){background:var(--g2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(22,163,74,.35)}
+.gw-pay-btn:disabled{opacity:.45;cursor:not-allowed}
+.gw-pay-btn svg{width:18px;height:18px;fill:white}
+.gw-bottom-bar{padding:16px 32px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#94a3b8}
+.gw-bottom-bar svg{width:14px;height:14px;fill:#94a3b8}
+@media(max-width:780px){.gw-bottom-bar{padding:16px 20px}}
+
+/* SUCCESS */
+#paySuccess{display:none;padding:60px 24px;text-align:center;background:white;min-height:100vh;flex-direction:column;align-items:center;justify-content:center}
+#paySuccess.active{display:flex}
+.success-circle{width:80px;height:80px;border-radius:50%;background:#dcfce7;display:grid;place-items:center;margin:0 auto 20px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-circle svg{width:40px;height:40px;fill:#16a34a}
+
+/* PROCESSING SPINNER */
+.spinner{width:22px;height:22px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* PAYMENT SUCCESS */
+.pay-success{text-align:center;padding:48px 24px;display:none}
+.pay-success.active{display:block}
+.success-icon{width:72px;height:72px;background:var(--g3);border-radius:50%;display:grid;place-items:center;margin:0 auto 20px}
+.success-icon svg{width:36px;height:36px;fill:var(--g)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.plan-card,.trial-banner{animation:fadeUp .5s ease both}
+.plan-card:nth-child(1){animation-delay:.05s}
+.plan-card:nth-child(2){animation-delay:.12s}
+.plan-card:nth-child(3){animation-delay:.19s}
+.plan-card:nth-child(4){animation-delay:.26s}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner" style="position:relative;justify-content:center;gap:32px">
+    <a href="DukaanBook_profile.html" class="home-logo" title="Back to Home">
+      <img src="data:image/png;base64,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" style="width:40px;height:40px;border-radius:10px;object-fit:cover;flex-shrink:0" alt="DukaanBook logo"/>
+      <span style="display:none" class="logo-text">DukaanBook</span>
+    </a>
+    <a href="#compare" class="nav-link" style="display:block">Compare Plans</a>
+    <a href="#faq" class="nav-link" style="display:block">FAQ</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Simple, Honest Pricing</div>
+  <h1>Choose the plan that<br/><span>fits your shop</span></h1>
+  <p>No hidden charges. No confusing tiers. Start free, upgrade only when you're ready.</p>
+</div>
+
+<!-- PRICING CARDS -->
+<section class="pricing-section">
+  <div class="plans-grid" id="plansGrid">
+
+    <!-- FREE TRIAL -->
+    <div class="trial-banner">
+      <div class="trial-icon">
+        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+      </div>
+      <h3>7-Day Free Trial</h3>
+      <p>Try every feature of DukaanBook — completely free. No card needed.</p>
+      <div style="font-size:32px;font-weight:800;color:var(--g);margin-bottom:4px">₹0</div>
+      <div style="font-size:13px;color:var(--t3);margin-bottom:20px">for 7 days</div>
+      <ul class="feat-list" style="text-align:left">
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+          <span class="feat-label">Full inventory access</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+          <span class="feat-label">Expiry alerts active</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+          <span class="feat-label">No credit card required</span>
+        </li>
+      </ul>
+      <button class="cta-trial" onclick="choosePlan('7-Day Free Trial','₹0','free')">Start Free Trial →</button>
+    </div>
+
+    <!-- BASIC / MONTHLY -->
+    <div class="plan-card" id="cardMonthly">
+      <div class="plan-label">Basic</div>
+      <div class="plan-name">Monthly Plan</div>
+      <div class="plan-tagline">Perfect for shopkeepers just getting started</div>
+      <div class="price-row">
+        <span class="price-sym">₹</span>
+        <span class="price-amt" id="priceMonthly">69</span>
+        <span class="price-period">/month</span>
+      </div>
+      <div style="display:inline-block;background:#fff7ed;border:1.5px solid #fed7aa;color:#c2410c;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:12px">+18% GST extra</div>
+      <hr class="plan-divider"/>
+      <ul class="feat-list">
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+          <span class="feat-label">Up to 100 products tracked</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>
+          <span class="feat-label">10-day expiry alerts</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></div>
+          <span class="feat-label">Basic dashboard view</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
+          <span class="feat-label">Single user access</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+          <span class="feat-label">Email support</span>
+        </li>
+      </ul>
+      <button class="plan-cta cta-outline" onclick="choosePlan('Basic Monthly Plan','₹69/month','monthly')">Choose Plan</button>
+    </div>
+
+    <!-- QUARTERLY -->
+    <div class="plan-card" id="cardQuarterly">
+      <div class="plan-label">Standard</div>
+      <div class="plan-name">Quarterly Plan</div>
+      <div class="plan-tagline">More savings, more features — ideal for active shops</div>
+      <div class="price-row">
+        <span class="price-sym">₹</span>
+        <span class="price-amt" id="priceQuarterly">499</span>
+        <span class="price-period" id="periodQuarterly">/quarter</span>
+      </div>
+      <div style="display:inline-block;background:#fff7ed;border:1.5px solid #fed7aa;color:#c2410c;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px">+18% GST extra</div>
+      <div style="height:4px;margin-bottom:12px">
+        <span class="savings-pill" id="savingsQuarterly">Save ₹-28 vs monthly</span>
+      </div>
+      <hr class="plan-divider"/>
+      <ul class="feat-list">
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+          <span class="feat-label">All Basic features included</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
+          <span class="feat-label">Monthly loss report</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+          <span class="feat-label">Priority email support</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M16.75 13.96c.25.13.41.2.46.3.06.11.04.61-.21 1.18-.2.56-1.24 1.1-1.7 1.12-.46.02-.47.36-2.96-.73-2.49-1.09-3.99-3.75-4.11-3.92-.12-.17-.96-1.38-.92-2.61.05-1.22.69-1.8.95-2.04.24-.22.51-.29.68-.26h.47c.15 0 .36-.06.55.45l.69 1.87c.06.16.1.34.01.48-.08.16-.12.26-.2.38s-.27.24-.41.35c-.14.12-.28.25-.12.5.17.26.75 1.09 1.61 1.75.5.38 1.25.83 1.74.98.48.15.36.27.17.44.12.16.44-.21.75-.59.29-.36.7-.48 1.01-.21z"/></svg></div>
+          <span class="feat-label">WhatsApp support</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
+          <span class="feat-label">Return tracking module</span>
+        </li>
+      </ul>
+      <button class="plan-cta cta-green" onclick="choosePlan('Quarterly Plan','₹499/quarter','quarterly')">Get Started</button>
+    </div>
+
+    <!-- ANNUAL -->
+    <div class="plan-card featured" id="cardYearly">
+      <div class="featured-badge">⭐ Best Value</div>
+      <div class="plan-label">Premium</div>
+      <div class="plan-name">Annual Plan</div>
+      <div class="plan-tagline">Maximum savings for committed shopkeepers</div>
+      <div class="price-row">
+        <span class="price-sym">₹</span>
+        <span class="price-amt" id="priceYearly">999</span>
+        <span class="price-period" id="periodYearly">/year</span>
+      </div>
+      <div style="display:inline-block;background:#fff7ed;border:1.5px solid #fed7aa;color:#c2410c;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px">+18% GST extra</div>
+      <div style="height:4px;margin-bottom:12px">
+        <span class="savings-pill" id="savingsYearly">Save ₹-229 vs monthly</span>
+      </div>
+      <hr class="plan-divider"/>
+      <ul class="feat-list">
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+          <span class="feat-label">All Quarterly features included</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
+          <span class="feat-label">Advanced analytics & trends</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>
+          <span class="feat-label">SMS expiry alerts</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+          <span class="feat-label">Priority email + WhatsApp support</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
+          <span class="feat-label">Supplier credit tracking</span>
+        </li>
+        <li>
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+          <span class="feat-label">Multi-staff access (coming soon)</span>
+        </li>
+      </ul>
+      <button class="plan-cta cta-green" onclick="choosePlan('Annual Plan','₹999/year','yearly')">Get Best Value →</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="compare-section" id="compare">
+  <div class="section-head">
+    <h2>Full Feature Comparison</h2>
+    <p>See exactly what you get on each plan — no surprises.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:34%;text-align:left">Feature</th>
+          <th>Free Trial</th>
+          <th>Monthly<br/><span style="font-weight:400;font-size:11px;color:var(--t3)">₹69/mo</span></th>
+          <th class="col-hdr">Quarterly<br/><span style="font-weight:400;font-size:11px">₹499/qtr</span></th>
+          <th class="col-hdr" style="color:#16a34a!important">Annual<br/><span style="font-weight:400;font-size:11px">₹999/yr</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Products tracked</td>
+          <td>Up to 50</td>
+          <td>Up to 100</td>
+          <td class="col-feat">Unlimited</td>
+          <td class="col-feat">Unlimited</td>
+        </tr>
+        <tr>
+          <td>Expiry date tracking</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check col-feat">✓</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+        <tr>
+          <td>10-day advance alerts</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check col-feat">✓</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+        <tr>
+          <td>Manufacturing date tracking</td>
+          <td class="cross">—</td>
+          <td class="check">✓</td>
+          <td class="check col-feat">✓</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+        <tr>
+          <td>Dashboard view</td>
+          <td>Basic</td>
+          <td>Basic</td>
+          <td class="col-feat">Advanced</td>
+          <td class="col-feat">Advanced + Analytics</td>
+        </tr>
+        <tr>
+          <td>Product return tracking</td>
+          <td class="cross">—</td>
+          <td class="cross">—</td>
+          <td class="check col-feat">✓</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+        <tr>
+          <td>Monthly loss report</td>
+          <td class="cross">—</td>
+          <td class="cross">—</td>
+          <td class="check col-feat">✓</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+        <tr>
+          <td>SMS alerts</td>
+          <td class="cross">—</td>
+          <td class="cross">—</td>
+          <td class="cross col-feat">—</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+        <tr>
+          <td>Supplier credit tracking</td>
+          <td class="cross">—</td>
+          <td class="cross">—</td>
+          <td class="cross col-feat">—</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+        <tr>
+          <td>Email support</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="col-feat">Priority</td>
+          <td class="col-feat">Priority</td>
+        </tr>
+        <tr>
+          <td>WhatsApp support</td>
+          <td class="cross">—</td>
+          <td class="cross">—</td>
+          <td class="check col-feat">✓</td>
+          <td class="check col-feat">✓</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="section-head">
+    <h2>Frequently Asked Questions</h2>
+    <p>Simple answers for busy shopkeepers.</p>
+  </div>
+  <div id="faqList"></div>
+</section>
+
+<!-- CTA BANNER -->
+<div class="cta-banner" style="margin-bottom:0;border-radius:0">
+  <h2>Start protecting your inventory today</h2>
+  <p>7 days free. No card required. Takes less than 2 minutes to set up.</p>
+  <div class="cta-banner-btns">
+    <a href="#" class="btn-white">Start Free Trial</a>
+    <a href="#compare" class="btn-ghost2">Compare Plans</a>
+  </div>
+</div>
+
+</div><!-- /mainContent -->
+
+<!-- PAYMENT GATEWAY -->
+<div id="payment">
+
+  <!-- SUCCESS SCREEN -->
+  <div id="paySuccess">
+    <div>
+      <div class="success-circle">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+      </div>
+      <h2 style="font-size:26px;font-weight:800;margin-bottom:8px;color:#0f172a">Payment Successful!</h2>
+      <p style="color:#475569;margin-bottom:8px;font-size:15px">Welcome to DukaanBook. Your subscription is now active.</p>
+      <p style="color:#94a3b8;font-size:13px;margin-bottom:32px">A confirmation has been sent to your registered number.</p>
+      <button onclick="showMain()" style="background:var(--g);color:white;border:none;padding:14px 32px;border-radius:12px;font-family:var(--ff);font-size:15px;font-weight:700;cursor:pointer">Go to Dashboard →</button>
+    </div>
+  </div>
+
+  <!-- GATEWAY -->
+  <div class="gw-wrap" id="gwMain">
+
+    <!-- LEFT: BRAND + ORDER SUMMARY -->
+    <div class="gw-left">
+      <button class="gw-back" onclick="showMain()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Plans
+      </button>
+
+      <div class="gw-brand">
+        <img src="data:image/png;base64,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" style="width:36px;height:36px;border-radius:9px;object-fit:cover;flex-shrink:0" alt="DukaanBook"/>
+        <div class="gw-brand-name">DukaanBook</div>
+      </div>
+
+      <div class="gw-plan-badge">
+        <div class="gw-plan-label">Selected Plan</div>
+        <div class="gw-plan-name" id="gwPlanName">Monthly Plan</div>
+        <div class="gw-plan-sub" id="gwPlanSub">Billed monthly · Cancel anytime</div>
+      </div>
+
+      <div class="gw-amount-box">
+        <div class="gw-amount-label">Amount to pay</div>
+        <div class="gw-amount"><span>₹</span><span id="gwAmtMain">69</span></div>
+        <div class="gw-amount-note">Inclusive of GST</div>
+      </div>
+
+      <div class="gw-breakdown">
+        <div class="gw-row"><span id="gwBreakPlan">Monthly Plan</span><span id="gwBreakAmt">₹69</span></div>
+        <div class="gw-row"><span>GST (18%)</span><span id="gwBreakGst">₹12.42</span></div>
+        <div class="gw-row total"><span>Total</span><span id="gwBreakTotal">₹81.42</span></div>
+      </div>
+
+      <div class="gw-secure">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        Secured by 256-bit SSL encryption
+      </div>
+    </div>
+
+    <!-- RIGHT: PAYMENT METHODS -->
+    <div class="gw-right">
+      <div class="gw-right-inner">
+        <div style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:20px">Choose Payment Method</div>
+
+        <!-- TABS -->
+        <div class="gw-tabs">
+          <button class="gw-tab active" onclick="gwTab('upi',this)">
+            <span class="gw-tab-icon">📱</span>
+            <span class="gw-tab-label">UPI</span>
+          </button>
+          <button class="gw-tab" onclick="gwTab('netbank',this)">
+            <span class="gw-tab-icon">🏦</span>
+            <span class="gw-tab-label">Net Banking</span>
+          </button>
+          <button class="gw-tab" onclick="gwTab('card',this)">
+            <span class="gw-tab-icon">💳</span>
+            <span class="gw-tab-label">Card</span>
+          </button>
+        </div>
+
+        <!-- UPI PANEL -->
+        <div class="gw-panel active" id="panel-upi">
+          <p style="font-size:13px;color:#64748b;margin-bottom:16px">Choose your preferred UPI app</p>
+          <div class="upi-apps-grid">
+            <button class="upi-app-btn" id="uapp-phonepe" onclick="selectApp('phonepe')">
+              <div class="upi-app-icon icon-phonepe">
+                <!-- PhonePe P -->
+                <svg viewBox="0 0 48 48" fill="white"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="26" font-weight="900" font-family="sans-serif">P</text></svg>
+              </div>
+              <span class="upi-app-name">PhonePe</span>
+            </button>
+            <button class="upi-app-btn" id="uapp-gpay" onclick="selectApp('gpay')">
+              <div class="upi-app-icon icon-gpay">
+                <svg viewBox="0 0 48 48" fill="white"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" font-weight="900" font-family="sans-serif">G</text></svg>
+              </div>
+              <span class="upi-app-name">Google Pay</span>
+            </button>
+            <button class="upi-app-btn" id="uapp-paytm" onclick="selectApp('paytm')">
+              <div class="upi-app-icon icon-paytm">
+                <svg viewBox="0 0 48 48" fill="white"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-weight="900" font-family="sans-serif">Pay</text></svg>
+              </div>
+              <span class="upi-app-name">Paytm</span>
+            </button>
+            <button class="upi-app-btn" id="uapp-bhim" onclick="selectApp('bhim')">
+              <div class="upi-app-icon icon-bhim">
+                <svg viewBox="0 0 48 48" fill="white"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-weight="900" font-family="sans-serif">B</text></svg>
+              </div>
+              <span class="upi-app-name">BHIM UPI</span>
+            </button>
+          </div>
+
+          <div class="upi-or">or enter UPI ID manually</div>
+
+          <div class="upi-id-section">
+            <div class="upi-id-label">Your UPI ID</div>
+            <div class="upi-id-row">
+              <input class="upi-id-input" id="upiIdInput" type="text" placeholder="mobilenumber@upi" oninput="gwCheckReady()"/>
+              <button class="upi-verify-btn" onclick="verifyUpi()">Verify</button>
+            </div>
+            <div id="upiStatus" style="font-size:12px;margin-top:8px;min-height:16px"></div>
+          </div>
+
+          <div class="upi-or" style="margin:16px 0 14px">or scan QR code</div>
+          <div class="upi-qr-box" onclick="alert('QR code would open in your app')">
+            <div class="upi-qr-inner">
+              <svg viewBox="0 0 24 24"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zm-14 4H3v8h8v-8zm-2 6H5v-4h4v4zm4-6h2v2h-2zm2 2h2v2h-2zm2-2h2v2h-2zm0 4h2v2h-2zm2-2h2v2h-2zm0-4h2v2h-2zm-4 4h2v2h-2z"/></svg>
+              <span>Tap to scan & pay with any UPI app</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- NET BANKING PANEL -->
+        <div class="gw-panel" id="panel-netbank">
+          <p style="font-size:13px;color:#64748b;margin-bottom:16px">Popular banks</p>
+          <div class="nb-popular">
+            <button class="nb-bank-btn" id="nb-sbi" onclick="selectBank('sbi',this)">
+              <div class="nb-bank-icon" style="background:#22577a;color:white;font-size:13px;font-weight:800">SBI</div>
+              <div><div class="nb-bank-name">State Bank of India</div><div class="nb-bank-type">Public sector</div></div>
+            </button>
+            <button class="nb-bank-btn" id="nb-hdfc" onclick="selectBank('hdfc',this)">
+              <div class="nb-bank-icon" style="background:#003366;color:white;font-size:12px;font-weight:800">HDFC</div>
+              <div><div class="nb-bank-name">HDFC Bank</div><div class="nb-bank-type">Private sector</div></div>
+            </button>
+            <button class="nb-bank-btn" id="nb-icici" onclick="selectBank('icici',this)">
+              <div class="nb-bank-icon" style="background:#c8102e;color:white;font-size:11px;font-weight:800">ICICI</div>
+              <div><div class="nb-bank-name">ICICI Bank</div><div class="nb-bank-type">Private sector</div></div>
+            </button>
+            <button class="nb-bank-btn" id="nb-axis" onclick="selectBank('axis',this)">
+              <div class="nb-bank-icon" style="background:#800000;color:white;font-size:12px;font-weight:800">AXIS</div>
+              <div><div class="nb-bank-name">Axis Bank</div><div class="nb-bank-type">Private sector</div></div>
+            </button>
+          </div>
+          <div class="nb-other-label">Other banks</div>
+          <select class="nb-select" id="bankDropdown" onchange="selectBankDrop(this)">
+            <option value="">— Select your bank —</option>
+            <option value="kotak">Kotak Mahindra Bank</option>
+            <option value="pnb">Punjab National Bank</option>
+            <option value="bob">Bank of Baroda</option>
+            <option value="canara">Canara Bank</option>
+            <option value="union">Union Bank of India</option>
+            <option value="indusind">IndusInd Bank</option>
+            <option value="yes">Yes Bank</option>
+            <option value="idbi">IDBI Bank</option>
+            <option value="rbl">RBL Bank</option>
+            <option value="federal">Federal Bank</option>
+            <option value="other">Other Bank</option>
+          </select>
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px;color:#92400e;margin-top:14px;display:flex;gap:8px;align-items:flex-start">
+            <span>ℹ️</span>
+            <span>You will be redirected to your bank's secure internet banking portal to complete the payment.</span>
+          </div>
+        </div>
+
+        <!-- CARD PANEL -->
+        <div class="gw-panel" id="panel-card">
+          <div class="card-visual">
+            <div class="card-chip"></div>
+            <div class="card-number-display" id="cardDisplay">•••• •••• •••• ••••</div>
+            <div class="card-bottom">
+              <div><div style="font-size:9px;margin-bottom:2px">CARD HOLDER</div><div id="cardHolderDisplay">YOUR NAME</div></div>
+              <div><div style="font-size:9px;margin-bottom:2px">EXPIRES</div><div id="cardExpDisplay">MM/YY</div></div>
+              <div style="font-size:22px;opacity:.6">💳</div>
+            </div>
+          </div>
+          <div class="gw-input-group">
+            <label class="gw-label">Card Number</label>
+            <input class="gw-input" type="text" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"/>
+          </div>
+          <div class="gw-input-row">
+            <div class="gw-input-group">
+              <label class="gw-label">Expiry Date</label>
+              <input class="gw-input" type="text" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)"/>
+            </div>
+            <div class="gw-input-group">
+              <label class="gw-label">CVV</label>
+              <input class="gw-input" type="password" id="cardCvv" placeholder="•••" maxlength="4" oninput="gwCheckReady()"/>
+            </div>
+          </div>
+          <div class="gw-input-group">
+            <label class="gw-label">Name on Card</label>
+            <input class="gw-input" type="text" id="cardName" placeholder="As printed on card" oninput="updateCardHolder(this.value);gwCheckReady()"/>
+          </div>
+        </div>
+
+        <!-- PAY BUTTON -->
+        <button class="gw-pay-btn" id="gwPayBtn" onclick="submitGw()" disabled>
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+          <span id="gwPayLabel">Pay ₹81.42 Securely</span>
+          <div class="spinner" id="gwSpinner"></div>
+        </button>
+      </div>
+
+      <div class="gw-bottom-bar">
+        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        100% Secure · Powered by Razorpay · PCI DSS Compliant
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 DukaanBook &nbsp;·&nbsp; Made for Indian shopkeepers &nbsp;·&nbsp; <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a> &nbsp;·&nbsp; hello@dukanbook.in</p>
+</footer>
+
+<script>
+// Apply Theme
+const savedTheme = localStorage.getItem('db_theme_intensity');
+if (savedTheme !== null) {
+  const val = parseInt(savedTheme);
+  const maxL = 90;
+  const minL = 30;
+  const lightness = minL + ((maxL - minL) * (val / 100));
+  document.documentElement.style.setProperty('--primary', `hsl(211, 56%, ${lightness}%)`);
+}
+
+document.querySelector('.trial-banner p').textContent = 'Try every feature of DukaanBook — completely free. No card needed.';
+
+const faqs = [
+  {q:"Is the 7-day free trial really free?",a:"Yes, completely free. You don't need to enter any payment details. Just sign up with your phone number and start using DukaanBook immediately."},
+  {q:"What happens when my free trial ends?",a:"You'll receive a reminder on day 5 and day 7. After the trial, you can choose any paid plan to continue. Your data is safe — we never delete it."},
+  {q:"Can I switch between Monthly, Quarterly, and Yearly?",a:"Yes, you can upgrade or downgrade your plan at any time from your account settings. If you upgrade mid-cycle, we'll credit the unused portion."},
+  {q:"How do expiry alerts work?",a:"DukaanBook automatically checks your product expiry dates every day. If any product is expiring within 10 days, you'll get an in-app notification (and SMS if you're on the Annual plan)."},
+  {q:"Can I cancel my subscription anytime?",a:"Yes, you can cancel from your account any time. There's no lock-in. For Quarterly and Annual plans, unused months are not refunded but you'll keep access until the period ends."},
+  {q:"What is product return tracking?",a:"When stock expires or you return items to your supplier, you can mark them in DukaanBook. This helps you keep accurate inventory counts and track how much money you've recovered from returns."},
+  {q:"Do you support Hindi or other languages?",a:"We currently support English and Hindi in the app. More regional languages are coming soon based on shopkeeper feedback."},
+  {q:"Is my data safe?",a:"Yes. All your shop data is encrypted and stored securely. We never share your data with third parties. You can export or delete your data at any time."}
+];
+const list = document.getElementById('faqList');
+faqs.forEach((f,i)=>{
+  const item = document.createElement('div');
+  item.className='faq-item';
+  item.innerHTML=`<button class="faq-q" onclick="toggleFaq(${i},this)"><span>${f.q}</span><span class="icon"><svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></span></button><div class="faq-a" id="faq-a-${i}"><p>${f.a}</p></div>`;
+  list.appendChild(item);
+});
+function toggleFaq(i,btn){
+  const ans=document.getElementById('faq-a-'+i);
+  const isOpen=ans.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(a=>a.classList.remove('open'));
+  document.querySelectorAll('.faq-q').forEach(b=>b.classList.remove('open'));
+  if(!isOpen){ans.classList.add('open');btn.classList.add('open');}
+}
+
+// ── PLAN DATA ──────────────────────────────────────────
+const planData = {
+  free:    {name:'7-Day Free Trial',  sub:'No credit card required', base:0},
+  monthly: {name:'Monthly Plan',      sub:'Billed monthly · Cancel anytime', base:69},
+  quarterly:{name:'Quarterly Plan',  sub:'Billed every 3 months', base:499},
+  yearly:  {name:'Annual Plan',       sub:'Best value · Billed yearly', base:999}
+};
+
+let gwTotal = 0;
+
+function choosePlan(name, price, type){
+  const p = planData[type];
+  const gst = +(p.base * 0.18).toFixed(2);
+  gwTotal = +(p.base + gst).toFixed(2);
+
+  document.getElementById('gwPlanName').textContent = p.name;
+  document.getElementById('gwPlanSub').textContent = p.sub;
+  document.getElementById('gwAmtMain').textContent = gwTotal === 0 ? '0' : gwTotal.toFixed(2);
+  document.getElementById('gwBreakPlan').textContent = p.name;
+  document.getElementById('gwBreakAmt').textContent = p.base === 0 ? '₹0' : '₹'+p.base;
+  document.getElementById('gwBreakGst').textContent = p.base === 0 ? '₹0' : '₹'+gst;
+  document.getElementById('gwBreakTotal').textContent = p.base === 0 ? '₹0' : '₹'+gwTotal.toFixed(2);
+  document.getElementById('gwPayLabel').textContent = p.base === 0 ? 'Activate Free Trial' : 'Pay ₹'+gwTotal.toFixed(2)+' Securely';
+
+  // reset all selections
+  resetGw();
+
+  // show gateway
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('payment').style.display = 'block';
+  document.getElementById('payment').classList.add('active');
+  document.getElementById('gwMain').style.display = 'grid';
+  document.getElementById('paySuccess').style.display = 'none';
+  document.getElementById('paySuccess').classList.remove('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  if(type === 'free'){
+    document.getElementById('gwPayBtn').disabled = false;
+  }
+}
+
+function showMain(){
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('payment').style.display = 'none';
+  document.getElementById('payment').classList.remove('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── TABS ──────────────────────────────────────────────
+let currentTab = 'upi';
+function gwTab(tab, btn){
+  currentTab = tab;
+  document.querySelectorAll('.gw-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.gw-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  resetGw();
+}
+
+// ── UPI ──────────────────────────────────────────────
+let selectedApp = '';
+function selectApp(app){
+  selectedApp = app;
+  ['phonepe','gpay','paytm','bhim'].forEach(a=>{
+    document.getElementById('uapp-'+a).classList.toggle('active', a===app);
+  });
+  gwCheckReady();
+}
+
+function verifyUpi(){
+  const val = document.getElementById('upiIdInput').value.trim();
+  const status = document.getElementById('upiStatus');
+  if(!val || !val.includes('@')){
+    status.textContent = '⚠️ Please enter a valid UPI ID (e.g. name@upi)';
+    status.style.color = '#d97706';
+    return;
+  }
+  status.textContent = '⏳ Verifying…';
+  status.style.color = '#6b7280';
+  setTimeout(()=>{
+    status.textContent = '✅ UPI ID verified successfully';
+    status.style.color = '#16a34a';
+    gwCheckReady();
+  }, 1200);
+}
+
+// ── NET BANKING ───────────────────────────────────────
+let selectedBank = '';
+function selectBank(bank, btn){
+  selectedBank = bank;
+  document.querySelectorAll('.nb-bank-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('bankDropdown').value = '';
+  gwCheckReady();
+}
+function selectBankDrop(sel){
+  selectedBank = sel.value;
+  document.querySelectorAll('.nb-bank-btn').forEach(b=>b.classList.remove('active'));
+  gwCheckReady();
+}
+
+// ── CARD ──────────────────────────────────────────────
+function fmtCard(el){
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  const disp = v.padEnd(16,'•');
+  document.getElementById('cardDisplay').textContent =
+    disp.substring(0,4)+' '+disp.substring(4,8)+' '+disp.substring(8,12)+' '+disp.substring(12,16);
+  gwCheckReady();
+}
+function fmtExp(el){
+  let v = el.value.replace(/\D/g,'').substring(0,4);
+  if(v.length >= 3) v = v.substring(0,2)+' / '+v.substring(2);
+  el.value = v;
+  document.getElementById('cardExpDisplay').textContent = v || 'MM/YY';
+  gwCheckReady();
+}
+function updateCardHolder(val){
+  document.getElementById('cardHolderDisplay').textContent = val.toUpperCase() || 'YOUR NAME';
+}
+
+// ── READY CHECK ───────────────────────────────────────
+function gwCheckReady(){
+  let ready = false;
+  if(currentTab === 'upi'){
+    const upiVal = document.getElementById('upiIdInput').value.trim();
+    const upiVerified = document.getElementById('upiStatus').textContent.includes('✅');
+    ready = selectedApp !== '' || upiVerified || (upiVal.includes('@') && upiVal.length > 3);
+  } else if(currentTab === 'netbank'){
+    ready = selectedBank !== '';
+  } else if(currentTab === 'card'){
+    const n = document.getElementById('cardNum').value.replace(/\s/g,'');
+    const e = document.getElementById('cardExp').value;
+    const c = document.getElementById('cardCvv').value;
+    const nm = document.getElementById('cardName').value.trim();
+    ready = n.length === 16 && e.includes('/') && c.length >= 3 && nm.length > 1;
+  }
+  const btn = document.getElementById('gwPayBtn');
+  btn.disabled = !ready;
+}
+
+function resetGw(){
+  selectedApp = ''; selectedBank = '';
+  ['phonepe','gpay','paytm','bhim'].forEach(a=>{
+    const el = document.getElementById('uapp-'+a);
+    if(el) el.classList.remove('active');
+  });
+  document.querySelectorAll('.nb-bank-btn').forEach(b=>b.classList.remove('active'));
+  const dd = document.getElementById('bankDropdown');
+  if(dd) dd.value = '';
+  const ui = document.getElementById('upiIdInput');
+  if(ui) ui.value = '';
+  const us = document.getElementById('upiStatus');
+  if(us) us.textContent = '';
+  const btn = document.getElementById('gwPayBtn');
+  if(btn) btn.disabled = true;
+}
+
+// ── SUBMIT ────────────────────────────────────────────
+function submitGw(){
+  const btn = document.getElementById('gwPayBtn');
+  const lbl = document.getElementById('gwPayLabel');
+  const spin = document.getElementById('gwSpinner');
+  btn.disabled = true;
+  lbl.textContent = 'Processing…';
+  spin.style.display = 'block';
+  setTimeout(()=>{
+    const planName = document.getElementById('gwPlanName').textContent;
+    localStorage.setItem('db_plan', planName);
+    
+    let expiry = new Date();
+    if(planName.includes('Trial')) expiry.setDate(expiry.getDate() + 7);
+    else if(planName.includes('Monthly')) expiry.setMonth(expiry.getMonth() + 1);
+    else if(planName.includes('Quarterly')) expiry.setMonth(expiry.getMonth() + 3);
+    else if(planName.includes('Annual')) expiry.setFullYear(expiry.getFullYear() + 1);
+    
+    const opts = { year: 'numeric', month: 'long', day: 'numeric' };
+    localStorage.setItem('db_plan_expiry', expiry.toLocaleDateString('en-US', opts));
+
+    document.getElementById('gwMain').style.display = 'none';
+    const s = document.getElementById('paySuccess');
+    s.style.display = 'flex';
+    s.classList.add('active');
+  }, 2500);
+}
+</script>
+</body>
+</html>

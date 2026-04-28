@@ -1,0 +1,3787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DukaanBook — Inventory Manager</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Nunito:wght@700;800&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #2a5282;
+      --primary-50: #e8f0fa;
+      --primary-100: #bee3f8;
+      --accent: #2b6cb0;
+      --accent-hover: #2c5282;
+      --surface: #ffffff;
+      --surface-2: #f7f9fc;
+      --surface-3: #eef2f8;
+      --border: #d0d9e8;
+      --border-light: #e8edf5;
+      --text: #1a202c;
+      --text-2: #4a5568;
+      --text-3: #718096;
+      --sidebar-bg: #1a3a5c;
+      --sidebar-text: #cbd5e0;
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+      --sidebar-active: rgba(255, 255, 255, 0.15);
+      --green-bg: #f0fff4;
+      --green-border: #9ae6b4;
+      --green-text: #22543d;
+      --yellow-bg: #fffff0;
+      --yellow-border: #f6e05e;
+      --yellow-text: #744210;
+      --red-bg: #fff5f5;
+      --red-border: #feb2b2;
+      --red-text: #742a2a;
+      --btn-cart: #2b6cb0;
+      --btn-cart-hover: #2c5282;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --anim-speed: 0.2s;
+    }
+
+    [data-theme="dark"] {
+      --primary: #90cdf4;
+      --primary-light: #63b3ed;
+      --primary-50: rgba(144, 205, 244, 0.1);
+      --primary-100: rgba(144, 205, 244, 0.2);
+      --accent: #63b3ed;
+      --accent-hover: #4299e1;
+      --surface: #1a202c;
+      --surface-2: #171923;
+      --surface-3: #2d3748;
+      --border: #4a5568;
+      --border-light: #2d3748;
+      --text: #f7fafc;
+      --text-2: #e2e8f0;
+      --text-3: #a0aec0;
+      --sidebar-bg: #11141c;
+      --sidebar-text: #a0aec0;
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+      --sidebar-active: rgba(255, 255, 255, 0.15);
+      --green-bg: rgba(154, 230, 180, 0.15);
+      --green-border: #48bb78;
+      --green-text: #9ae6b4;
+      --yellow-bg: rgba(246, 224, 94, 0.15);
+      --yellow-border: #ecc94b;
+      --yellow-text: #faf089;
+      --red-bg: rgba(254, 178, 178, 0.15);
+      --red-border: #f56565;
+      --red-text: #feb2b2;
+      --btn-cart: #3182ce;
+      --btn-cart-hover: #2b6cb0;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface-2);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--anim-speed), color var(--anim-speed);
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: transform var(--anim-speed), background var(--anim-speed), color var(--anim-speed);
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    .nav-item {
+      transition: all var(--anim-speed);
+    }
+
+    .nav-item:active {
+      transform: scale(0.98);
+    }
+
+    .inventory-table tbody tr {
+      transition: background var(--anim-speed), transform var(--anim-speed);
+    }
+
+    .color-options {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .color-opt {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform var(--anim-speed);
+    }
+
+    .color-opt:hover {
+      transform: scale(1.1);
+    }
+
+    .color-opt.selected {
+      border-color: var(--text);
+      box-shadow: 0 0 0 2px var(--surface);
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      height: 58px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 250px;
+    }
+
+    .menu-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      transition: background 0.15s;
+    }
+
+    .menu-btn:hover {
+      background: var(--surface-3);
+    }
+
+    .menu-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    .logo-text {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: -0.3px;
+    }
+
+    .search-wrap {
+      flex: 1;
+      max-width: 620px;
+      position: relative;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 0 44px 0 44px;
+      font-size: 14px;
+      background: var(--surface-3);
+      color: var(--text);
+      transition: all 0.15s;
+    }
+
+    .search-wrap input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-3);
+      pointer-events: none;
+    }
+
+    .search-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-3);
+    }
+
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      min-width: 16px;
+      height: 16px;
+      background: #e53e3e;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+      border: 2px solid var(--surface);
+    }
+
+    .profile-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 4px;
+    }
+
+    /* Filter Dropdown */
+    .filter-dropdown {
+      position: relative;
+    }
+
+    .filter-menu {
+      display: none;
+      position: absolute;
+      top: 44px;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      min-width: 220px;
+      z-index: 300;
+      overflow: hidden;
+    }
+
+    .filter-menu.open {
+      display: block;
+    }
+
+    .filter-header {
+      padding: 10px 14px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .filter-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-2);
+      transition: background 0.1s;
+    }
+
+    .filter-item:hover {
+      background: var(--surface-3);
+      color: var(--text);
+    }
+
+    .filter-item svg {
+      width: 15px;
+      height: 15px;
+      opacity: 0.6;
+    }
+
+    .filter-item.active {
+      background: var(--primary-50);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .filter-item.active svg {
+      opacity: 1;
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      height: calc(100vh - 58px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      transition: width 0.2s;
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      width: 60px;
+    }
+
+    .sidebar.collapsed .sidebar-label {
+      display: none;
+    }
+
+    .sidebar.collapsed .add-btn span {
+      display: none;
+    }
+
+    .sidebar.collapsed .add-btn {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 50%;
+      margin: 12px auto;
+    }
+
+    .add-btn {
+      margin: 14px 16px 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #2b6cb0, #1a4f8c);
+      color: #fff;
+      border-radius: 22px;
+      padding: 0 20px 0 14px;
+      height: 42px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      box-shadow: 0 2px 8px rgba(43, 108, 176, 0.45);
+      transition: all 0.15s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(43, 108, 176, 0.55);
+    }
+
+    .add-btn svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .nav-section {
+      padding: 6px 0;
+    }
+
+    .nav-section-title {
+      padding: 8px 16px 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .sidebar.collapsed .nav-section-title {
+      display: none;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 16px;
+      color: var(--sidebar-text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 0;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background: var(--sidebar-active);
+      color: #fff;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 22px;
+      width: 3px;
+      background: #63b3ed;
+      border-radius: 0 2px 2px 0;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 1px 7px;
+    }
+
+    .sidebar.collapsed .nav-badge {
+      display: none;
+    }
+
+    .label-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .label-list {
+      padding: 0 10px 0 14px;
+    }
+
+    .label-btn {
+      padding: 6px 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 4px;
+      transition: all 0.1s;
+    }
+
+    .label-btn:hover {
+      background: var(--sidebar-hover);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-header {
+      padding: 16px 24px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--surface);
+    }
+
+    .content-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .content-title svg {
+      width: 18px;
+      height: 18px;
+      color: var(--text-3);
+    }
+
+    .content-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .selection-toolbar {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      border-radius: 22px;
+      padding: 4px 14px 4px 10px;
+    }
+
+    .selection-toolbar.visible {
+      display: flex;
+    }
+
+    .selection-toolbar span {
+      font-size: 12px;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .sel-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 14px;
+      transition: background 0.1s;
+    }
+
+    .sel-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .sel-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .table-wrap {
+      flex: 1;
+      padding: 16px 24px;
+    }
+
+    .inventory-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-light);
+    }
+
+    .inventory-table thead {
+      background: var(--surface-3);
+    }
+
+    .inventory-table th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .inventory-table th:first-child {
+      width: 36px;
+      padding-right: 4px;
+    }
+
+    .inventory-table td {
+      padding: 11px 14px;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    .inventory-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .inventory-table tbody tr {
+      transition: background 0.1s;
+    }
+
+    .inventory-table tbody tr:hover {
+      background: var(--surface-3);
+    }
+
+    .inventory-table tbody tr.selected {
+      background: var(--primary-50) !important;
+    }
+
+    /* Row color coding */
+    tr.row-normal td {
+      background: transparent;
+    }
+
+    tr.row-green td {
+      background: rgba(154, 230, 180, 0.12);
+    }
+
+    tr.row-yellow td {
+      background: rgba(246, 224, 94, 0.14);
+    }
+
+    tr.row-red td {
+      background: rgba(254, 178, 178, 0.18);
+    }
+
+    .expiry-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .expiry-badge.safe {
+      background: var(--surface-3);
+      color: var(--text-3);
+    }
+
+    .expiry-badge.green {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border: 1px solid var(--green-border);
+    }
+
+    .expiry-badge.yellow {
+      background: var(--yellow-bg);
+      color: var(--yellow-text);
+      border: 1px solid var(--yellow-border);
+    }
+
+    .expiry-badge.red {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border: 1px solid var(--red-border);
+    }
+
+    .expiry-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .expiry-badge.safe::before {
+      background: var(--text-3);
+    }
+
+    .expiry-badge.green::before {
+      background: #38a169;
+    }
+
+    .expiry-badge.yellow::before {
+      background: #d69e2e;
+    }
+
+    .expiry-badge.red::before {
+      background: #e53e3e;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-badge.sold {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border: 1px solid var(--green-border);
+    }
+
+    .status-badge.returned {
+      background: var(--surface-3);
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+
+    .item-name {
+      font-weight: 500;
+    }
+
+    .qty-tag {
+      display: inline-block;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .mrp {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-cart {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--btn-cart);
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .btn-cart:hover {
+      background: var(--btn-cart-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-cart svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .btn-del {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      color: var(--text-3);
+      transition: all 0.15s;
+    }
+
+    .btn-del:hover {
+      background: var(--red-bg);
+      color: #c53030;
+    }
+
+    .btn-del svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-restore {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface-3);
+      color: var(--text-2);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .btn-restore:hover {
+      background: var(--primary-50);
+      color: var(--primary);
+      border-color: var(--primary-100);
+    }
+
+    .btn-restore svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .btn-sell {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #276749;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .btn-sell:hover {
+      background: #22543d;
+      transform: translateY(-1px);
+    }
+
+    .btn-sell svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .btn-return {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface-3);
+      color: var(--text-2);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .btn-return:hover {
+      background: var(--primary-50);
+      color: var(--primary);
+      border-color: var(--primary-100);
+    }
+
+    .btn-return[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: var(--surface-3) !important;
+      color: var(--text-3) !important;
+      border-color: var(--border-light) !important;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-light);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Table footer */
+    .table-footer {
+      padding: 10px 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .table-footer-info {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-danger {
+      background: var(--red-bg);
+      color: #c53030;
+      border: 1px solid var(--red-border);
+      padding: 7px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-danger:hover {
+      background: #fed7d7;
+    }
+
+    .btn-danger svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-success {
+      background: #276749;
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-success:hover {
+      background: #22543d;
+    }
+
+    .btn-success svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-primary-sm {
+      background: var(--primary);
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-primary-sm:hover {
+      background: var(--primary-light);
+    }
+
+    .btn-primary-sm svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Checkbox */
+    .cb {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      appearance: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cb:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .cb:checked::after {
+      content: '✓';
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      width: 480px;
+      max-width: calc(100vw - 32px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      transform: translateY(16px);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-3);
+      transition: background 0.1s;
+    }
+
+    .modal-close:hover {
+      background: var(--surface-3);
+    }
+
+    .modal-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .modal-body {
+      padding: 18px 20px;
+    }
+
+    .form-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface-3);
+      border-radius: var(--radius);
+      padding: 3px;
+      margin-bottom: 16px;
+    }
+
+    .form-tab {
+      flex: 1;
+      text-align: center;
+      padding: 7px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-3);
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .form-tab svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .form-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-input {
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 12px;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--surface);
+      transition: all 0.15s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1);
+    }
+
+    .barcode-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .barcode-zone:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--primary-50);
+    }
+
+    .barcode-zone svg {
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 8px;
+      display: block;
+      opacity: 0.5;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn-cancel {
+      padding: 8px 18px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+      transition: all 0.15s;
+    }
+
+    .btn-cancel:hover {
+      background: var(--surface-3);
+    }
+
+    .btn-submit {
+      padding: 8px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      background: var(--accent);
+      transition: all 0.15s;
+    }
+
+    .btn-submit:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Confirm modal */
+    .confirm-modal {
+      max-width: 380px;
+    }
+
+    .confirm-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .confirm-icon.warn {
+      background: #fffbeb;
+    }
+
+    .confirm-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .confirm-text {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.6;
+      margin-bottom: 4px;
+    }
+
+    .confirm-subtitle {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    /* Toast */
+    .toast-wrap {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 600;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: #2d3748;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+      animation: slideUp 0.2s ease;
+    }
+
+    .toast svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .toast.success {
+      background: #276749;
+    }
+
+    .toast.warning {
+      background: #c05621;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Sell all add-to-cart bar at bottom */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      padding: 10px 24px;
+      border-top: 1px solid var(--border-light);
+      font-size: 13px;
+      color: var(--text-2);
+    }
+
+    /* Notification panel */
+    .notif-panel {
+      display: none;
+      position: fixed;
+      top: 58px;
+      right: 0;
+      width: 340px;
+      height: calc(100vh - 58px);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 200;
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+      overflow-y: auto;
+    }
+
+    .notif-panel.open {
+      display: block;
+    }
+
+    .notif-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .notif-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .notif-item:hover {
+      background: var(--surface-3);
+    }
+
+    .notif-item.unread {
+      background: var(--primary-50);
+    }
+
+    .notif-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .notif-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .notif-time {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-top: 3px;
+    }
+
+    /* Profile panel */
+    .profile-panel {
+      display: none;
+      position: absolute;
+      top: 52px;
+      right: 8px;
+      width: 260px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      z-index: 400;
+    }
+
+    .profile-panel.open {
+      display: block;
+    }
+
+    .profile-header {
+      padding: 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .profile-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+    }
+
+    .profile-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .profile-email {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 2px;
+    }
+
+    .profile-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.1s;
+    }
+
+    .profile-item:hover {
+      background: var(--surface-3);
+    }
+
+    .profile-item svg {
+      width: 15px;
+      height: 15px;
+      opacity: 0.6;
+    }
+
+    /* Settings panel */
+    .settings-panel {
+      display: none;
+      position: absolute;
+      top: 52px;
+      right: 44px;
+      width: 280px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      z-index: 400;
+    }
+
+    .settings-panel.open {
+      display: block;
+    }
+
+    .settings-header {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .settings-section {
+      padding: 10px 14px;
+    }
+
+    .settings-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--text-2);
+    }
+
+    .toggle {
+      width: 36px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle.on {
+      background: var(--accent);
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .toggle.on::after {
+      transform: translateX(16px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 60px;
+      }
+
+      .sidebar .sidebar-label,
+      .sidebar .nav-badge,
+      .sidebar .nav-section-title {
+        display: none;
+      }
+
+      .add-btn span {
+        display: none;
+      }
+
+      .add-btn {
+        width: 40px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 12px auto;
+      }
+
+      .main {
+        min-width: 0;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" id="menuToggle" title="Main menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      <a class="logo" href="#" id="logoBtn">
+        <div class="logo-mark" style="background: transparent; border-radius: 0; width: 36px; height: 36px;">
+          <!-- Custom Storefront SVG -->
+          <svg viewBox="0 0 64 64" width="100%" height="100%">
+            <!-- Blue rounded square background -->
+            <rect x="0" y="0" width="64" height="64" rx="16" fill="url(#logoGrad)" />
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3182ce" />
+                <stop offset="100%" stop-color="#2b6cb0" />
+              </linearGradient>
+            </defs>
+            <!-- Store Body -->
+            <rect x="14" y="28" width="36" height="20" fill="#cbd5e0" />
+            <!-- Roof -->
+            <polygon points="10,28 54,28 54,32 10,32" fill="#e53e3e" />
+            <!-- Doors -->
+            <rect x="18" y="34" width="8" height="14" fill="#63b3ed" stroke="#2d3748" stroke-width="1.5" />
+            <rect x="26" y="34" width="8" height="14" fill="#63b3ed" stroke="#2d3748" stroke-width="1.5" />
+            <!-- Window -->
+            <rect x="38" y="36" width="10" height="6" fill="#63b3ed" stroke="#2d3748" stroke-width="1.5" />
+            <!-- Sign Board -->
+            <rect x="22" y="16" width="20" height="10" rx="2" fill="#e2e8f0" stroke="#2d3748" stroke-width="1.5" />
+            <text x="32" y="24" font-family="'Nunito', sans-serif" font-weight="800" font-size="8" fill="#2d3748"
+              text-anchor="middle">24 H</text>
+          </svg>
+        </div>
+        <span class="logo-text"
+          style="font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 21px; letter-spacing: -0.5px;">DukaanBook</span>
+      </a>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg></span>
+      <input type="text" id="searchInput" placeholder="Search items by name, category..." />
+    </div>
+
+    <div class="topbar-right">
+      <!-- Theme Toggle -->
+      <button class="icon-btn" id="themeBtn" title="Toggle Dark Mode" onclick="toggleTheme()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
+      <!-- Filter -->
+      <div class="filter-dropdown" id="filterDropdown">
+        <button class="icon-btn" id="filterBtn" title="Filter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
+        </button>
+        <div class="filter-menu" id="filterMenu">
+          <div class="filter-header">Sort & Filter</div>
+          <div class="filter-item" data-sort="price-high" onclick="applyFilter(this,'price-high')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20V4M6 14l6 6 6-6" />
+            </svg>
+            Price: High to Low
+          </div>
+          <div class="filter-item" data-sort="price-low" onclick="applyFilter(this,'price-low')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 4v16M6 10l6-6 6 6" />
+            </svg>
+            Price: Low to High
+          </div>
+          <div class="filter-item filter-main-only" data-sort="mfg" onclick="applyFilter(this,'mfg')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Date of Manufacturing
+          </div>
+          <div class="filter-item filter-main-only" data-sort="expiry" onclick="applyFilter(this,'expiry')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Expiry Date
+          </div>
+          <div class="filter-item filter-sold-only" data-sort="sold-desc" onclick="applyFilter(this,'sold-desc')"
+            style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Date of Sold (Desc)
+          </div>
+          <div class="filter-item filter-sold-only" data-sort="sold-asc" onclick="applyFilter(this,'sold-asc')"
+            style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Date of Sold (Asc)
+          </div>
+          <div class="filter-item" data-sort="az" onclick="applyFilter(this,'az')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 6h16M4 12h10M4 18h6" />
+            </svg>
+            Name: A to Z
+          </div>
+          <div class="filter-item" data-sort="za" onclick="applyFilter(this,'za')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 6h6M4 12h10M4 18h16" />
+            </svg>
+            Name: Z to A
+          </div>
+          <div class="filter-item filter-main-only" data-sort="added-desc" onclick="applyFilter(this,'added-desc')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+            Item Added (Newest)
+          </div>
+          <div class="filter-item filter-main-only" data-sort="added-asc" onclick="applyFilter(this,'added-asc')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+            Item Added (Oldest)
+          </div>
+        </div>
+      </div>
+      <!-- Cart -->
+      <button class="icon-btn" id="cartNavBtn" title="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+        </svg>
+        <span class="badge" id="cartBadge">0</span>
+      </button>
+      <!-- Subscribe -->
+      <a href="dukanbook-pricing.html" class="icon-btn" title="Subscribe / Upgrade" style="text-decoration: none;">
+        <svg viewBox="0 0 24 24" fill="#faf089" stroke="#d69e2e" stroke-width="2">
+          <path d="M2 20h20M5 20V10l7-7 7 7v10" />
+          <path d="M5 10l-3-3 5 1 5-6 5 6 5-1-3 3" />
+        </svg>
+      </a>
+      <!-- AI Assistant -->
+      <a href="DukaanBook_ai.html" class="icon-btn" title="AI Assistant" style="text-decoration: none; font-size: 18px;">
+        🤖
+      </a>
+      <!-- Notifications -->
+      <button class="icon-btn" id="notifBtn" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        <span class="badge">3</span>
+      </button>
+      <!-- Settings -->
+      <button class="icon-btn" id="settingsBtn" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+      </button>
+      <!-- Profile -->
+      <button class="profile-btn" id="profileBtn" title="My Account">RK</button>
+    </div>
+  </header>
+
+  <!-- Notification Panel -->
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-header">
+      Notifications
+      <button class="icon-btn" id="closeNotif" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" width="14" height="14">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg></button>
+    </div>
+    <div class="notif-item unread">
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div class="notif-dot" style="margin-top:4px"></div>
+        <div>
+          <div class="notif-text">Milk (500ml) expires in 3 days. Consider selling or removing.</div>
+          <div class="notif-time">5 min ago</div>
+        </div>
+      </div>
+    </div>
+    <div class="notif-item unread">
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div class="notif-dot" style="margin-top:4px"></div>
+        <div>
+          <div class="notif-text">Bread Loaf stock low — only 2 units remaining.</div>
+          <div class="notif-time">1 hour ago</div>
+        </div>
+      </div>
+    </div>
+    <div class="notif-item unread">
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div class="notif-dot" style="margin-top:4px"></div>
+        <div>
+          <div class="notif-text">5 items sold today. View in Sold Items section.</div>
+          <div class="notif-time">3 hours ago</div>
+        </div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="width:8px;height:8px;flex-shrink:0;margin-top:4px"></div>
+        <div>
+          <div class="notif-text">Butter Amul restocked — 20 units added.</div>
+          <div class="notif-time">Yesterday</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Panel -->
+  <div class="profile-panel" id="profilePanel">
+    <div class="profile-header">
+      <div class="profile-avatar">RK</div>
+      <div class="profile-name">Ramesh Kumar</div>
+      <div class="profile-email">ramesh@dukaanbook.in</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px;">Shop: Kumar General Store</div>
+    </div>
+    <a href="DukaanBook_my.html" class="profile-item" style="text-decoration: none; color: inherit;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg> My Profile
+    </a>
+    <a href="dukanbook-pricing.html" class="profile-item" style="text-decoration: none; color: inherit;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg> Subscription Plan
+    </a>
+    <div class="profile-item" onclick="signOut()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+      </svg> Sign Out</div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">Settings</div>
+    <div class="settings-section">
+      <div class="settings-label">Notifications</div>
+      <div class="toggle-row">Expiry Alerts <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">Low Stock Alerts <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">Sale Notifications <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+    <div class="settings-section" style="border-top:1px solid var(--border-light)">
+      <div class="settings-label">Display</div>
+      <div class="toggle-row">Compact View <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">Show MRP in Bold <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+    <div class="settings-section" style="border-top:1px solid var(--border-light)">
+      <div class="settings-label">Currency</div>
+      <select class="form-input" style="height:32px;font-size:13px;width:100%">
+        <option>₹ Indian Rupee (INR)</option>
+        <option>$ US Dollar (USD)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="app">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <button class="add-btn" id="addItemBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        <span>Add Item</span>
+      </button>
+
+      <div class="nav-section">
+        <div class="nav-item active" data-view="main" onclick="switchView('main',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          <span class="sidebar-label">All Items</span>
+          <span class="nav-badge" id="allBadge">6</span>
+        </div>
+        <div class="nav-item" data-view="starred" onclick="switchView('starred',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          <span class="sidebar-label">Starred Items</span>
+          <span class="nav-badge" id="starredBadge">0</span>
+        </div>
+        <div class="nav-item" data-view="pinned" onclick="switchView('pinned',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span class="sidebar-label">Pinned</span>
+        </div>
+        <div class="nav-item" data-view="notifications" onclick="switchView('notifications',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+          <span class="sidebar-label">Expiry Notifications</span>
+          <span class="nav-badge" id="expiry-badge-nav">0</span>
+        </div>
+      </div>
+
+      <div class="nav-section" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px">
+        <div class="nav-section-title">Store</div>
+        <div class="nav-item" data-view="sold" onclick="switchView('sold',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+          <span class="sidebar-label">Sold Items</span>
+        </div>
+        <div class="nav-item" data-view="cart" onclick="switchView('cart',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+          <span class="sidebar-label">Cart</span>
+          <span class="nav-badge" id="cartSidebarBadge">0</span>
+        </div>
+        <div class="nav-item" data-view="insights" onclick="switchView('insights',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18" />
+            <path d="M18 9l-5 5-4-4-5 5" />
+          </svg>
+          <span class="sidebar-label">Insights</span>
+        </div>
+        <div class="nav-item" data-view="bin" onclick="switchView('bin',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+          <span class="sidebar-label">Bin</span>
+        </div>
+      </div>
+
+      <div class="nav-section" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px">
+        <div class="nav-section-title">Labels</div>
+        <div class="label-list" id="labelList">
+          <!-- Labels will be injected here by JS -->
+        </div>
+        <div class="label-list" style="margin-top:4px">
+          <div class="nav-item" style="padding:7px 10px;font-size:13px;color:rgba(255,255,255,0.4)"
+            onclick="openModal('addLabelModal')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span class="sidebar-label">New Label</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main" id="mainContent">
+      <!-- All Items View -->
+      <div id="view-main">
+        <div class="content-header">
+          <div class="content-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            All Inventory Items
+          </div>
+          <div class="content-actions">
+            <div class="selection-toolbar" id="selectionToolbar">
+              <span id="selCount">0 selected</span>
+              <button class="sel-btn" onclick="bulkAction('star')" title="Star">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>Star
+              </button>
+              <button class="sel-btn" onclick="bulkAction('pin')" title="Pin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>Pin
+              </button>
+              <button class="sel-btn" onclick="bulkAction('cart')" title="Add to Cart">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>Cart
+              </button>
+              <button class="sel-btn" onclick="bulkAction('sell')" title="Sell">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                  <line x1="7" y1="7" x2="7.01" y2="7" />
+                </svg>Sell
+              </button>
+              <button class="sel-btn" onclick="bulkAction('bin')" title="Delete">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                </svg>Delete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span style="font-size:12px;color:var(--text-3);font-weight:500">Expiry:</span>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#a0aec0"></div>10+ days (Normal)
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#38a169"></div>7–10 days (Watch)
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#d69e2e"></div>5–7 days (Caution)
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#e53e3e"></div>&lt;5 days (Urgent)
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="inventory-table" id="mainTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="cb" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Mfg. Date</th>
+                <th>Expiry Date</th>
+                <th>Quantity</th>
+                <th>MRP</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="mainTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bin View -->
+      <div id="view-bin" style="display:none">
+        <div class="content-header">
+          <div class="content-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+            Bin — Deleted Items
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="inventory-table" id="binTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="cb"></th>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Mfg. Date</th>
+                <th>Expiry Date</th>
+                <th>Quantity</th>
+                <th>MRP</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="binTableBody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-footer-info" id="binCount">0 items in bin</div>
+          <div class="footer-actions">
+            <button class="btn-danger" onclick="emptyBin()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+              </svg>
+              Delete All Permanently
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart View -->
+      <div id="view-cart" style="display:none">
+        <div class="content-header">
+          <div class="content-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            Cart
+          </div>
+          <div class="content-actions">
+            <button class="btn-primary-sm" onclick="openSellModal(true)" style="background:#276749">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+              Sell All
+            </button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="inventory-table" id="cartTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="cb"></th>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Mfg. Date</th>
+                <th>Expiry Date</th>
+                <th>Quantity</th>
+                <th>MRP</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cartTableBody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-footer-info">
+            Total: <strong id="cartTotal">₹0.00</strong>
+          </div>
+          <div class="footer-actions">
+            <button class="btn-primary-sm" onclick="openSellModal(true)" style="background:#276749">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+              Sell All
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sold View -->
+      <div id="view-sold" style="display:none">
+        <div class="content-header">
+          <div class="content-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+            Sold Items
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="cb" id="selectAllSold" onchange="toggleSelectAllSold(this)"></th>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Sold Date</th>
+                <th>Mfg. Date</th>
+                <th>Expiry Date</th>
+                <th>Quantity Sold</th>
+                <th>MRP</th>
+                <th>Status</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="soldTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Starred View -->
+      <div id="view-starred" style="display:none">
+        <div class="content-header">
+          <div class="content-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            Starred Items
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="inventory-table" id="starredTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="cb"></th>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Mfg. Date</th>
+                <th>Expiry Date</th>
+                <th>Quantity</th>
+                <th>MRP</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="starredTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pinned View -->
+      <div id="view-pinned" style="display:none">
+        <div class="content-header">
+          <div class="content-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            Pinned Items
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="cb"></th>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Mfg. Date</th>
+                <th>Expiry Date</th>
+                <th>Quantity</th>
+                <th>MRP</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pinnedTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Notifications View -->
+      <div id="view-notifications" style="display:none; height: 100%; padding: 0;">
+        <iframe src="dukaanbook_expiry.html" style="width:100%; height:100%; border:none; display:block; min-height:80vh;"></iframe>
+      </div>
+
+      <div id="view-insights" style="display:none">
+        <div class="content-header">
+          <div class="content-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18" />
+              <path d="M18 9l-5 5-4-4-5 5" />
+            </svg>
+            Insights & Analytics
+          </div>
+        </div>
+        <div style="padding:16px 24px;">
+          <!-- Custom Filters for Insights -->
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;" id="insightsFilters">
+            <button class="btn-restore" data-range="24h" onclick="applyInsightsFilter('24h', this)">Last 24
+              hours</button>
+            <button class="btn-restore" data-range="3d" onclick="applyInsightsFilter('3d', this)">Last 3 days</button>
+            <button class="btn-restore" data-range="1w" onclick="applyInsightsFilter('1w', this)">Last week</button>
+            <button class="btn-restore" data-range="2w" onclick="applyInsightsFilter('2w', this)">Last 2 weeks</button>
+            <button class="btn-restore" data-range="1m" onclick="applyInsightsFilter('1m', this)">Last Month</button>
+            <button class="btn-restore" data-range="3m" onclick="applyInsightsFilter('3m', this)">Last 3 Months</button>
+            <button class="btn-restore" data-range="6m" onclick="applyInsightsFilter('6m', this)">Last 6 Months</button>
+            <button class="btn-restore" data-range="1y" onclick="applyInsightsFilter('1y', this)">Last Year</button>
+            <button class="btn-restore"
+              style="background:var(--primary-50);color:var(--primary);border-color:var(--primary-100);"
+              data-range="all" onclick="applyInsightsFilter('all', this)">All time</button>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px;">
+            <!-- Top 10 Chart -->
+            <div
+              style="background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow);">
+              <div style="font-size:14px; font-weight:600; margin-bottom:16px; color:var(--text);">Top 10 Most Sold
+                Items</div>
+              <div style="position: relative; height: 250px; width: 100%;">
+                <canvas id="topItemsChart"></canvas>
+              </div>
+              <div id="insightsSummary"
+                style="display:flex; justify-content:space-between; margin-top:16px; font-size:13px; color:var(--text-2); background:var(--surface-3); padding:10px; border-radius:var(--radius);">
+                <div>Total Sold: <strong id="insTotalSold" style="color:var(--text);">0</strong></div>
+                <div>Most Sold: <strong id="insMostSold" style="color:var(--text);">-</strong></div>
+                <div>Least Sold: <strong id="insLeastSold" style="color:var(--text);">-</strong></div>
+              </div>
+            </div>
+
+            <!-- Category Pie Chart -->
+            <div
+              style="background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow);">
+              <div style="font-size:14px; font-weight:600; margin-bottom:16px; color:var(--text);">Sales by Label</div>
+              <div style="position: relative; height: 250px; width: 100%;">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Label Views (placeholder) -->
+      <div id="dynamicLabelViews"></div>
+    </main>
+  </div>
+
+  <!-- ADD ITEM MODAL -->
+  <div class="modal-overlay" id="addItemModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Add New Item</span>
+        <button class="modal-close" onclick="closeModal('addItemModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-tabs">
+          <div class="form-tab active" id="tab-manual" onclick="switchFormTab('manual')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            Manual Entry
+          </div>
+          <div class="form-tab" id="tab-barcode" onclick="switchFormTab('barcode')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M3 9V5a2 2 0 0 1 2-2h4M3 15v4a2 2 0 0 0 2 2h4M21 9V5a2 2 0 0 0-2-2h-4M21 15v4a2 2 0 0 1-2 2h-4M7 12h1M12 12v1M12 8v1M16 12h1M12 16v1" />
+            </svg>
+            Scan Barcode
+          </div>
+        </div>
+        <div id="manual-form">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">Item Name *</label>
+              <input type="text" class="form-input" id="inp-name" placeholder="e.g., Amul Butter 500g">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Manufacturing Date *</label>
+              <input type="date" class="form-input" id="inp-mfg">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Expiry Date</label>
+              <input type="date" class="form-input" id="inp-expiry">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quantity *</label>
+              <input type="number" class="form-input" id="inp-qty" placeholder="e.g., 10" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit</label>
+              <select class="form-input" id="inp-unit">
+                <option>pcs</option>
+                <option>kg</option>
+                <option>g</option>
+                <option>L</option>
+                <option>ml</option>
+                <option>dozen</option>
+                <option>box</option>
+                <option>pack</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">MRP (₹) *</label>
+              <input type="number" class="form-input" id="inp-mrp" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category / Label</label>
+              <select class="form-input" id="inp-label">
+                <option value="">None</option>
+                <!-- Labels dynamically populated -->
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Remarks (Sold Items)</label>
+              <textarea class="form-input" id="inp-remarks" placeholder="Notes for sold item..."
+                style="height:60px;resize:vertical;padding-top:8px" disabled></textarea>
+            </div>
+          </div>
+        </div>
+        <div id="barcode-form" style="display:none">
+          <div class="barcode-zone" onclick="simulateBarcodeScan()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path
+                d="M3 9V5a2 2 0 0 1 2-2h4M3 15v4a2 2 0 0 0 2 2h4M21 9V5a2 2 0 0 0-2-2h-4M21 15v4a2 2 0 0 1-2 2h-4M8 12h1v2H8zM11 8v8M14 12h1v2h-1zM17 8v8" />
+            </svg>
+            Click here or aim camera at barcode<br>
+            <span style="font-size:11px;opacity:0.7;margin-top:4px;display:block">Supports EAN-13, UPC-A, QR
+              codes</span>
+          </div>
+          <div id="barcode-preview" style="display:none;margin-top:14px">
+            <div
+              style="background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-size:13px;color:var(--text-2)">
+              <div style="font-weight:600;color:var(--text);margin-bottom:6px">Scanned Product Details</div>
+              <div id="barcode-result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('addItemModal')">Cancel</button>
+        <button class="btn-submit" onclick="addItem()">Add to Inventory</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD LABEL MODAL -->
+  <div class="modal-overlay" id="addLabelModal">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <span class="modal-title">Create New Label</span>
+        <button class="modal-close" onclick="closeModal('addLabelModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="text-align:left">
+          <label class="form-label">Label Name *</label>
+          <input type="text" class="form-input" id="inp-new-label" placeholder="e.g., Seasonal" style="width:100%">
+        </div>
+        <div class="form-group" style="margin-top:16px;text-align:left">
+          <label class="form-label">Color</label>
+          <div class="color-options" id="labelColorOptions" style="align-items:center;">
+            <div class="color-opt selected" style="background:#fc8181" data-color="#fc8181"
+              onclick="selectLabelColor(this)"></div>
+            <div class="color-opt" style="background:#f6ad55" data-color="#f6ad55" onclick="selectLabelColor(this)">
+            </div>
+            <div class="color-opt" style="background:#68d391" data-color="#68d391" onclick="selectLabelColor(this)">
+            </div>
+            <div class="color-opt" style="background:#63b3ed" data-color="#63b3ed" onclick="selectLabelColor(this)">
+            </div>
+            <div class="color-opt" style="background:#b794f4" data-color="#b794f4" onclick="selectLabelColor(this)">
+            </div>
+            <div class="color-opt" style="background:#f687b3" data-color="#f687b3" onclick="selectLabelColor(this)">
+            </div>
+            <input type="color" id="customLabelColor" title="Custom Color"
+              style="width:28px; height:28px; padding:0; border:none; border-radius:50%; cursor:pointer; background:none;"
+              onchange="selectCustomLabelColor(this)">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('addLabelModal')">Cancel</button>
+        <button class="btn-submit" onclick="saveNewLabel()">Create Label</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELL CONFIRM MODAL -->
+  <div class="modal-overlay" id="sellModal">
+    <div class="modal confirm-modal">
+      <div class="modal-body" style="padding:28px 24px 20px;text-align:center">
+        <div class="confirm-icon warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#d69e2e" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        </div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:8px">Confirm Sale</div>
+        <div class="confirm-text" id="sellConfirmText">Are you sure you want to sell all items in the cart? This will
+          mark them as sold and remove them from inventory.</div>
+        <div class="confirm-subtitle" id="sellConfirmSub"></div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px">
+        <button class="btn-cancel" onclick="closeModal('sellModal')" style="padding:8px 22px">Cancel</button>
+        <button class="btn-success" onclick="confirmSell()" style="padding:8px 22px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Yes, Sell Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELL QTY MODAL -->
+  <div class="modal-overlay" id="sellQtyModal">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <span class="modal-title">Add to Cart</span>
+        <button class="modal-close" onclick="closeModal('sellQtyModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding:28px 24px 20px;">
+        <div style="font-size:14px;color:var(--text-2);margin-bottom:16px;text-align:center" id="sellQtyPrompt">How many
+          items do you want to add to cart?</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input type="number" class="form-input" id="inp-sell-qty" placeholder="e.g., 2" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unit</label>
+            <select class="form-input" id="inp-sell-unit" disabled>
+              <option>pcs</option>
+              <option>kg</option>
+              <option>g</option>
+              <option>L</option>
+              <option>ml</option>
+              <option>dozen</option>
+              <option>box</option>
+              <option>pack</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px">
+        <button class="btn-cancel" onclick="closeModal('sellQtyModal')" style="padding:8px 22px">Cancel</button>
+        <button class="btn-primary-sm" onclick="processSellQty()" style="padding:8px 22px">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECT SELL QTY MODAL -->
+  <div class="modal-overlay" id="directSellQtyModal">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <span class="modal-title">Sell Item Directly</span>
+        <button class="modal-close" onclick="closeModal('directSellQtyModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding:28px 24px 20px;">
+        <div style="font-size:14px;color:var(--text-2);margin-bottom:16px;text-align:center">How much item do you want
+          to sell?</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input type="number" class="form-input" id="inp-direct-sell-qty" placeholder="e.g., 2" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unit</label>
+            <select class="form-input" id="inp-direct-sell-unit" disabled>
+              <option>pcs</option>
+              <option>kg</option>
+              <option>g</option>
+              <option>L</option>
+              <option>ml</option>
+              <option>dozen</option>
+              <option>box</option>
+              <option>pack</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px">
+        <button class="btn-cancel" onclick="closeModal('directSellQtyModal')" style="padding:8px 22px">Cancel</button>
+        <button class="btn-primary-sm" onclick="processDirectSellQty()" style="padding:8px 22px">Sell</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETURN QTY MODAL -->
+  <div class="modal-overlay" id="returnQtyModal">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <span class="modal-title">Return Items</span>
+        <button class="modal-close" onclick="closeModal('returnQtyModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding:28px 24px 20px;">
+        <div style="font-size:14px;color:var(--text-2);margin-bottom:16px;text-align:center" id="returnQtyPrompt">How
+          many items do you want to return?</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input type="number" class="form-input" id="inp-return-qty" placeholder="e.g., 2" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unit</label>
+            <select class="form-input" id="inp-return-unit">
+              <option>pcs</option>
+              <option>kg</option>
+              <option>g</option>
+              <option>L</option>
+              <option>ml</option>
+              <option>dozen</option>
+              <option>box</option>
+              <option>pack</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px">
+        <button class="btn-cancel" onclick="closeModal('returnQtyModal')" style="padding:8px 22px">Cancel</button>
+        <button class="btn-primary-sm" onclick="processReturnQty()" style="padding:8px 22px">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETURN CONFIRM MODAL -->
+  <div class="modal-overlay" id="returnConfirmModal">
+    <div class="modal confirm-modal">
+      <div class="modal-body" style="padding:28px 24px 20px;text-align:center">
+        <div class="confirm-icon" style="background:var(--primary-100)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:8px">Confirm Return</div>
+        <div class="confirm-text" id="returnConfirmText">Are you sure you want to return this item? It will be added
+          back to inventory.</div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px">
+        <button class="btn-cancel" onclick="closeModal('returnConfirmModal')" style="padding:8px 22px">Cancel</button>
+        <button class="btn-primary-sm" onclick="confirmReturn()" style="padding:8px 22px">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVALID ACTION MODAL -->
+  <div class="modal-overlay" id="invalidModal">
+    <div class="modal confirm-modal">
+      <div class="modal-body" style="padding:28px 24px 20px;text-align:center">
+        <div class="confirm-icon" style="background:var(--red-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red-border)" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        </div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:8px">Invalid Action</div>
+        <div class="confirm-text" id="invalidMessageText">The requested action cannot be performed.</div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;">
+        <button class="btn-primary-sm" onclick="closeModal('invalidModal')" style="padding:8px 30px">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script>
+    // ─── DATA ───
+    const today = new Date();
+    function daysFromNow(d) { return Math.round((new Date(d) - today) / 86400000); }
+
+    let savedInventory = localStorage.getItem('db_inventory');
+    let inventory = savedInventory ? JSON.parse(savedInventory) : [
+      { id: 1, name: 'Amul Butter 500g', mfg: '2025-03-10', expiry: '2026-06-01', qty: 20, unit: 'pcs', mrp: 285, label: 'Dairy', starred: false, pinned: false, addedDate: '2025-03-25' },
+      { id: 2, name: 'Bread Loaf (White)', mfg: '2026-04-22', expiry: '2026-04-29', qty: 2, unit: 'pcs', mrp: 45, label: 'Grocery', starred: true, pinned: false, addedDate: '2026-04-22' },
+      { id: 3, name: 'Tata Salt 1kg', mfg: '2025-01-15', expiry: '2027-01-15', qty: 50, unit: 'pcs', mrp: 28, label: 'Grocery', starred: false, pinned: true, addedDate: '2025-01-20' },
+      { id: 4, name: 'Milk Full Cream 500ml', mfg: '2026-04-24', expiry: '2026-04-29', qty: 8, unit: 'pcs', mrp: 32, label: 'Dairy', starred: false, pinned: false, addedDate: '2026-04-24' },
+      { id: 5, name: 'Maaza Mango Drink 600ml', mfg: '2025-12-01', expiry: '2026-05-01', qty: 24, unit: 'pcs', mrp: 30, label: 'Beverages', starred: false, pinned: false, addedDate: '2025-12-05' },
+      { id: 6, name: 'Britannia Marie Gold Biscuits', mfg: '2026-02-10', expiry: '2026-07-10', qty: 36, unit: 'pcs', mrp: 40, label: 'Grocery', starred: true, pinned: false, addedDate: '2026-02-15' },
+    ];
+    let bin = [];
+    let cart = [];
+    let sold = [];
+    let nextId = inventory.length > 0 ? Math.max(...inventory.map(i => i.id)) + 1 : 1;
+    let nextSoldId = 1;
+    let currentView = 'main';
+    let selectedIds = new Set();
+    let activeSort = null;
+    let sellAllMode = false;
+
+    let labels = []; // No default labels as per request
+    let insightsFilter = 'all';
+    let topItemsChart = null;
+    let categoryChart = null;
+
+    // ─── EXPIRY CLASS ───
+    function expiryClass(expiry) {
+      if (!expiry) return 'safe';
+      const d = daysFromNow(expiry);
+      if (d < 0) return 'red';
+      if (d <= 5) return 'red';
+      if (d <= 7) return 'yellow';
+      if (d <= 10) return 'green';
+      return 'safe';
+    }
+    function rowClass(expiry) {
+      if (!expiry) return 'row-normal';
+      const c = expiryClass(expiry);
+      return c === 'safe' ? 'row-normal' : 'row-' + c;
+    }
+    function expiryLabel(expiry) {
+      if (!expiry) return 'No Expiry';
+      const d = daysFromNow(expiry);
+      if (d < 0) return 'Expired';
+      if (d === 0) return 'Expires today';
+      return d + 'd left';
+    }
+
+    // ─── RENDER HELPERS ───
+    function actionsBtns(item, view) {
+      if (view === 'sold') {
+        const fullyReturned = (item.returnedQty >= item.qty) || (item.status === 'Returned');
+        const isExpired = item.status === 'Sold' && daysFromNow(item.expiry) < 0;
+        const disabledAttr = (fullyReturned || isExpired) ? 'disabled' : '';
+        return `<div class="row-actions">
+      <button class="btn-return" onclick="initiateReturn(${item.soldId})" title="Return" ${disabledAttr}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>Return
+      </button>
+      <button class="btn-restore" onclick="openEditModal(${item.soldId}, true)" title="Edit Item" style="padding:5px 8px; gap:0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      <button class="btn-del" onclick="deleteSold(${item.soldId})" title="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>
+    </div>`;
+      }
+      if (view === 'bin') {
+        return `<div class="row-actions">
+      <button class="btn-restore" onclick="restoreItem(${item.id})" title="Back to Shop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.8"/></svg>Back to Shop
+      </button>
+      <button class="btn-del" onclick="permDelete(${item.id})" title="Delete Permanently">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>
+    </div>`;
+      }
+      if (view === 'cart') {
+        return `<div class="row-actions">
+      <button class="btn-sell" onclick="openSellModal(false,${item.id})" title="Sell Now">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Sell Now
+      </button>
+      <button class="btn-del" onclick="removeFromCart(${item.id})" title="Remove from cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`;
+      }
+      return `<div class="row-actions">
+    <button class="btn-cart" onclick="addToCart(${item.id})" title="Add to Cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Add to Cart
+    </button>
+    <button class="btn-sell" onclick="sellDirectAction(${item.id})" title="Sell Directly" style="background:#276749; color:#fff;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      Sell
+    </button>
+    <button class="btn-restore" onclick="openEditModal(${item.id})" title="Edit Item" style="padding:5px 8px; gap:0;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>
+    <button class="btn-del" onclick="moveTobin(${item.id})" title="Delete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
+  </div>`;
+    }
+
+    function renderRow(item, idx, view) {
+      const ec = expiryClass(item.expiry);
+      const isSelected = selectedIds.has(item.id);
+
+      let qtyDisplay = '';
+      if (view === 'cart') {
+        const invItem = inventory.find(i => i.id === item.id);
+        const maxQty = invItem ? invItem.qty : item.qty;
+        qtyDisplay = `<div style="display:flex;align-items:center;gap:4px;"><input type="number" min="1" max="${maxQty}" value="${item.qty}" class="form-input" style="width:60px;height:24px;padding:0 8px;font-size:12px;" onchange="updateCartQty(${item.id}, this.value)"> ${item.unit}</div>`;
+      } else {
+        qtyDisplay = `<span class="qty-tag">${item.qty} ${item.unit}</span>`;
+      }
+
+      return `<tr class="${rowClass(item.expiry)}${isSelected ? ' selected' : ''}" id="row-${item.id}">
+    <td><input type="checkbox" class="cb row-cb" data-id="${item.id}" onchange="toggleRow(this)" ${isSelected ? 'checked' : ''}></td>
+    <td style="color:var(--text-3);font-size:12px">${idx + 1}</td>
+    <td>
+      <div style="display:flex;align-items:center;gap:6px">
+        ${item.starred ? '<span title="Starred" style="color:#d69e2e;font-size:14px">&#9733;</span>' : ''}
+        ${item.pinned ? '<span title="Pinned" style="color:#3182ce;font-size:14px">&#9679;</span>' : ''}
+        <span class="item-name">${item.name}</span>
+      </div>
+    </td>
+    <td style="font-size:12px;color:var(--text-2)">${item.mfg}</td>
+    <td style="font-size:12px;color:var(--text-2)">${item.expiry || '-'}</td>
+    <td>${qtyDisplay}</td>
+    <td><span class="mrp">₹${parseFloat(item.mrp).toFixed(2)}</span></td>
+    <td><span class="expiry-badge ${ec}">${expiryLabel(item.expiry)}</span></td>
+    <td>${actionsBtns(item, view)}</td>
+  </tr>`;
+    }
+
+    function renderSoldRow(s, idx) {
+      const isSelected = selectedIds.has('sold-' + s.soldId);
+      const badgeCls = s.status === 'Sold' ? 'sold' : 'returned';
+      return `<tr class="row-normal${isSelected ? ' selected' : ''}" id="row-sold-${s.soldId}">
+    <td><input type="checkbox" class="cb row-cb" data-id="sold-${s.soldId}" onchange="toggleRow(this)" ${isSelected ? 'checked' : ''}></td>
+    <td style="color:var(--text-3);font-size:12px">${idx + 1}</td>
+    <td class="item-name">${s.name}</td>
+    <td style="font-size:12px;color:var(--text-2)">${s.soldOn}</td>
+    <td style="font-size:12px;color:var(--text-2)">${s.mfg}</td>
+    <td style="font-size:12px;color:var(--text-2)">${s.expiry || '-'}</td>
+    <td><span class="qty-tag">${s.qty} ${s.unit}</span></td>
+    <td><span class="mrp">₹${parseFloat(s.mrp).toFixed(2)}</span></td>
+    <td><span class="status-badge ${badgeCls}">${s.status}</span></td>
+    <td style="font-size:12px;color:var(--text-2)">
+      <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+        <textarea class="form-input" style="height:32px; padding:4px 8px; font-size:11px; resize:vertical; min-height:32px; width:150px;" placeholder="Add remark..." oninput="document.getElementById('save-remark-btn-${s.soldId}').style.display='block'" id="remark-text-${s.soldId}">${s.remarks || ''}</textarea>
+        <button class="btn-primary-sm" style="display:none; padding:4px 8px; font-size:11px; height:auto; background:#2b6cb0;" id="save-remark-btn-${s.soldId}" onclick="saveRemarkRow(${s.soldId})">Save changes</button>
+      </div>
+    </td>
+    <td>${actionsBtns(s, 'sold')}</td>
+  </tr>`;
+    }
+
+    function saveRemarkRow(soldId) {
+      const s = sold.find(x => x.soldId === soldId);
+      if (s) {
+        s.remarks = document.getElementById('remark-text-' + soldId).value;
+        toast('Remark saved', 'success');
+        document.getElementById('save-remark-btn-' + soldId).style.display = 'none';
+      }
+    }
+
+    function getFiltered(list) {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      let items = q ? list.filter(i => i.name.toLowerCase().includes(q)) : [...list];
+      if (activeSort === 'price-high') items.sort((a, b) => b.mrp - a.mrp);
+      else if (activeSort === 'price-low') items.sort((a, b) => a.mrp - b.mrp);
+      else if (activeSort === 'mfg') items.sort((a, b) => new Date(a.mfg) - new Date(b.mfg));
+      else if (activeSort === 'expiry') items.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+      else if (activeSort === 'added-desc') items.sort((a, b) => new Date(b.addedDate || 0) - new Date(a.addedDate || 0));
+      else if (activeSort === 'added-asc') items.sort((a, b) => new Date(a.addedDate || 0) - new Date(b.addedDate || 0));
+      else if (activeSort === 'az') items.sort((a, b) => a.name.localeCompare(b.name));
+      else if (activeSort === 'za') items.sort((a, b) => b.name.localeCompare(a.name));
+      return items;
+    }
+
+    function getFilteredSold() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      let items = q ? sold.filter(i => i.name.toLowerCase().includes(q)) : [...sold];
+      const sortMode = activeSort || 'sold-desc';
+      if (sortMode === 'sold-desc') items.sort((a, b) => new Date(b.soldOn) - new Date(a.soldOn));
+      else if (sortMode === 'sold-asc') items.sort((a, b) => new Date(a.soldOn) - new Date(b.soldOn));
+      else if (sortMode === 'price-high') items.sort((a, b) => b.mrp - a.mrp);
+      else if (sortMode === 'price-low') items.sort((a, b) => a.mrp - b.mrp);
+      else if (sortMode === 'az') items.sort((a, b) => a.name.localeCompare(b.name));
+      else if (sortMode === 'za') items.sort((a, b) => b.name.localeCompare(a.name));
+      return items;
+    }
+
+    function renderMain() {
+      const items = getFiltered(inventory);
+      document.getElementById('mainTableBody').innerHTML = items.map((it, i) => renderRow(it, i, 'main')).join('') ||
+        '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-3)">No items found.</td></tr>';
+      document.getElementById('allBadge').textContent = inventory.length;
+      updateSelectionToolbar();
+    }
+
+    function renderBin() {
+      document.getElementById('binTableBody').innerHTML = bin.map((it, i) => renderRow(it, i, 'bin')).join('') ||
+        '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-3)">Bin is empty.</td></tr>';
+      document.getElementById('binCount').textContent = bin.length + ' items in bin';
+    }
+
+    function renderCart() {
+      document.getElementById('cartTableBody').innerHTML = cart.map((it, i) => renderRow(it, i, 'cart')).join('') ||
+        '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-3)">Cart is empty. Add items from inventory.</td></tr>';
+      const total = cart.reduce((s, i) => s + (i.mrp * i.qty), 0);
+      document.getElementById('cartTotal').textContent = '₹' + total.toFixed(2);
+      const n = cart.length;
+      document.getElementById('cartBadge').textContent = n;
+      document.getElementById('cartSidebarBadge').textContent = n;
+    }
+
+    function renderSold() {
+      const items = getFilteredSold();
+      document.getElementById('soldTableBody').innerHTML = items.length ? items.map((s, i) => renderSoldRow(s, i)).join('') :
+        '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--text-3)">No items sold yet.</td></tr>';
+      updateSelectionToolbar();
+    }
+
+    function renderStarred() {
+      const items = inventory.filter(i => i.starred);
+      document.getElementById('starredTableBody').innerHTML = items.map((it, i) => renderRow(it, i, 'main')).join('') ||
+        '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-3)">No starred items yet.</td></tr>';
+      document.getElementById('starredBadge').textContent = items.length;
+    }
+
+    function renderPinned() {
+      const items = inventory.filter(i => i.pinned);
+      document.getElementById('pinnedTableBody').innerHTML = items.map((it, i) => renderRow(it, i, 'main')).join('') ||
+        '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-3)">No pinned items yet.</td></tr>';
+    }
+
+    function renderExpiryNotifications() {
+      const container = document.getElementById('expiry-notifications-container');
+      if (!container) return;
+      container.innerHTML = '';
+      let expiryCount = 0;
+      inventory.forEach(item => {
+        if (!item.expiry) return;
+        const d = daysFromNow(item.expiry);
+        if (d <= 7) {
+          expiryCount++;
+          let text = '';
+          if (d < 0) text = `${item.name} has expired ${Math.abs(d)} days ago. Please remove it.`;
+          else if (d === 0) text = `${item.name} expires today!`;
+          else text = `${item.name} expires in ${d} days. Consider selling or removing.`;
+
+          const div = document.createElement('div');
+          div.className = 'notif-item unread';
+          div.style = 'border-radius:var(--radius);background:var(--red-bg);border:1px solid var(--red-border);margin-bottom:8px';
+          div.innerHTML = `
+            <div style="display:flex;gap:8px;align-items:flex-start">
+              <div class="notif-dot" style="margin-top:4px; background:#e53e3e;"></div>
+              <div>
+                <div class="notif-text" style="color:var(--red-text);">${text}</div>
+                <div class="notif-time" style="color:var(--text-3);">${item.expiry}</div>
+              </div>
+            </div>
+          `;
+          container.appendChild(div);
+        }
+      });
+      if (expiryCount === 0) {
+        container.innerHTML = '<div style="color:var(--text-3);">No expiry warnings at the moment.</div>';
+      }
+      const badge = document.getElementById('expiry-badge-nav');
+      if (badge) badge.textContent = expiryCount;
+    }
+
+    function renderAll() {
+      localStorage.setItem('db_inventory', JSON.stringify(inventory));
+      renderMain(); renderBin(); renderCart(); renderSold(); renderStarred(); renderPinned(); renderExpiryNotifications();
+    }
+
+    // ─── VIEWS ───
+    function switchView(view, el) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      if (el) el.classList.add('active');
+      const views = ['main', 'bin', 'cart', 'sold', 'starred', 'pinned', 'notifications', 'insights'];
+
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        if (el) el.style.display = v === view ? '' : 'none';
+      });
+
+      // Dynamic label views
+      document.getElementById('dynamicLabelViews').style.display = view.startsWith('label-') ? '' : 'none';
+      if (view.startsWith('label-')) {
+        renderLabelView(view.substring(6));
+      }
+
+      currentView = view;
+      selectedIds.clear();
+      updateSelectionToolbar();
+
+      if (view === 'sold') {
+        document.querySelectorAll('.filter-main-only').forEach(e => e.style.display = 'none');
+        document.querySelectorAll('.filter-sold-only').forEach(e => e.style.display = 'flex');
+        if (activeSort === 'mfg' || activeSort === 'expiry' || activeSort === 'added-desc' || activeSort === 'added-asc') activeSort = 'sold-desc';
+      } else {
+        document.querySelectorAll('.filter-main-only').forEach(e => e.style.display = 'flex');
+        document.querySelectorAll('.filter-sold-only').forEach(e => e.style.display = 'none');
+        if (activeSort === 'sold-desc' || activeSort === 'sold-asc') activeSort = null;
+      }
+
+      if (view === 'main') renderMain();
+      else if (view === 'bin') renderBin();
+      else if (view === 'cart') renderCart();
+      else if (view === 'sold') renderSold();
+      else if (view === 'starred') renderStarred();
+      else if (view === 'pinned') renderPinned();
+      else if (view === 'insights') renderInsights();
+      else if (view === 'notifications') renderExpiryNotifications();
+    }
+
+    // ─── CART QTY UPDATE ───
+    function updateCartQty(id, newQty) {
+      newQty = parseInt(newQty);
+      const cartItem = cart.find(i => i.id === id);
+      const invItem = inventory.find(i => i.id === id);
+      if (!cartItem || !invItem) return;
+      if (newQty < 1) newQty = 1;
+      if (newQty > invItem.qty) newQty = invItem.qty;
+      cartItem.qty = newQty;
+      renderCart();
+    }
+
+    // ─── SELECTION ───
+    function toggleRow(cb) {
+      const idVal = cb.dataset.id;
+      const id = idVal.startsWith('sold-') ? idVal : parseInt(idVal);
+      if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+      const row = document.getElementById('row-' + idVal);
+      if (row) row.classList.toggle('selected', cb.checked);
+      updateSelectionToolbar();
+    }
+    function toggleSelectAll(cb) {
+      document.querySelectorAll('.row-cb').forEach(r => {
+        if (r.dataset.id.startsWith('sold-')) return;
+        r.checked = cb.checked;
+        const id = parseInt(r.dataset.id);
+        if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+        const row = document.getElementById('row-' + id);
+        if (row) row.classList.toggle('selected', cb.checked);
+      });
+      updateSelectionToolbar();
+    }
+    function toggleSelectAllSold(cb) {
+      document.querySelectorAll('.row-cb').forEach(r => {
+        if (!r.dataset.id.startsWith('sold-')) return;
+        r.checked = cb.checked;
+        const id = r.dataset.id;
+        if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+        const row = document.getElementById('row-' + id);
+        if (row) row.classList.toggle('selected', cb.checked);
+      });
+      updateSelectionToolbar();
+    }
+    function updateSelectionToolbar() {
+      const tb = document.getElementById('selectionToolbar');
+      if (!tb) return;
+      if (selectedIds.size > 0) { tb.classList.add('visible'); document.getElementById('selCount').textContent = selectedIds.size + ' selected'; }
+      else tb.classList.remove('visible');
+    }
+
+    function bulkAction(action) {
+      const ids = [...selectedIds];
+      if (ids.length === 0) return;
+      if (action === 'bin') {
+        ids.forEach(id => { const i = inventory.findIndex(x => x.id === id); if (i > -1) { bin.push(inventory[i]); inventory.splice(i, 1); } });
+        toast('Moved ' + ids.length + ' item(s) to bin', 'warning');
+      } else if (action === 'cart') {
+        ids.forEach(id => { if (!cart.find(x => x.id === id)) { const it = inventory.find(x => x.id === id); if (it) cart.push({ ...it, qty: 1 }); } });
+        toast('Added ' + ids.length + ' item(s) to cart', 'success');
+      } else if (action === 'star') {
+        ids.forEach(id => { const it = inventory.find(x => x.id === id); if (it) it.starred = !it.starred; });
+        toast('Starred ' + ids.length + ' item(s)');
+      } else if (action === 'pin') {
+        ids.forEach(id => { const it = inventory.find(x => x.id === id); if (it) it.pinned = !it.pinned; });
+        toast('Pinned ' + ids.length + ' item(s)');
+      } else if (action === 'sell') {
+        // Move selected to cart first, then sell
+        ids.forEach(id => { if (!cart.find(x => x.id === id)) { const it = inventory.find(x => x.id === id); if (it) cart.push({ ...it, qty: 1 }); } });
+        openSellModal(true);
+      }
+      selectedIds.clear();
+      renderAll();
+    }
+
+    // ─── ITEM ACTIONS ───
+    let currentSellId = null;
+    function addToCart(id) {
+      const item = inventory.find(i => i.id === id);
+      if (!item) return;
+      if (cart.find(i => i.id === id)) { toast('Already in cart', 'warning'); return; }
+
+      currentSellId = id;
+      document.getElementById('inp-sell-qty').value = 1;
+      document.getElementById('inp-sell-qty').max = item.qty;
+      document.getElementById('inp-sell-unit').value = item.unit;
+      openModal('sellQtyModal');
+    }
+
+    function processSellQty() {
+      const item = inventory.find(i => i.id === currentSellId);
+      if (!item) return;
+
+      let qty = parseInt(document.getElementById('inp-sell-qty').value);
+      if (!qty || qty < 1 || qty > item.qty) {
+        document.getElementById('invalidMessageText').textContent = 'Invalid quantity. Available: ' + item.qty;
+        openModal('invalidModal');
+        return;
+      }
+      closeModal('sellQtyModal');
+
+      cart.push({ ...item, qty: qty });
+      renderCart();
+      toast(item.name + ' added to cart', 'success');
+    }
+
+    let directSellTargetId = null;
+    function sellDirectAction(id) {
+      const item = inventory.find(i => i.id === id);
+      if (!item) return;
+      directSellTargetId = id;
+      document.getElementById('inp-direct-sell-qty').value = 1;
+      document.getElementById('inp-direct-sell-qty').max = item.qty;
+      document.getElementById('inp-direct-sell-unit').value = item.unit;
+      openModal('directSellQtyModal');
+    }
+
+    function processDirectSellQty() {
+      const item = inventory.find(i => i.id === directSellTargetId);
+      if (!item) return;
+
+      let qty = parseInt(document.getElementById('inp-direct-sell-qty').value);
+      if (!qty || qty < 1 || qty > item.qty) {
+        document.getElementById('invalidMessageText').textContent = 'Invalid quantity. Available: ' + item.qty;
+        openModal('invalidModal');
+        return;
+      }
+      closeModal('directSellQtyModal');
+
+      const todayStr = today.toISOString().split('T')[0];
+      sold.unshift({ ...item, qty: qty, soldOn: todayStr, status: 'Sold', soldId: nextSoldId++, returnedQty: 0, remarks: '' });
+
+      const idx = inventory.findIndex(i => i.id === item.id);
+      if (idx > -1) {
+        inventory[idx].qty -= qty;
+        if (inventory[idx].qty <= 0) inventory.splice(idx, 1);
+      }
+
+      renderAll();
+      toast('Item sold directly!', 'success');
+    }
+
+    function moveTobin(id) {
+      const idx = inventory.findIndex(i => i.id === id);
+      if (idx > -1) { bin.push(inventory[idx]); inventory.splice(idx, 1); renderAll(); toast('Item moved to bin'); }
+    }
+    function restoreItem(id) {
+      const idx = bin.findIndex(i => i.id === id);
+      if (idx > -1) { inventory.push(bin[idx]); bin.splice(idx, 1); renderAll(); toast('Item restored to inventory', 'success'); }
+    }
+    function permDelete(id) {
+      const idx = bin.findIndex(i => i.id === id);
+      if (idx > -1) { bin.splice(idx, 1); renderBin(); toast('Item permanently deleted'); }
+    }
+    function deleteSold(id) {
+      const idx = sold.findIndex(x => x.soldId === id);
+      if (idx > -1) { sold.splice(idx, 1); renderSold(); toast('Sold record deleted'); }
+    }
+    function removeFromCart(id) {
+      const idx = cart.findIndex(i => i.id === id);
+      if (idx > -1) { cart.splice(idx, 1); renderCart(); toast('Removed from cart'); }
+    }
+    function emptyBin() {
+      if (bin.length === 0) return;
+      bin = []; renderBin(); toast('Bin emptied permanently');
+    }
+
+    // ─── SELL ───
+    let sellTargetId = null;
+    function openSellModal(allMode, id) {
+      sellAllMode = allMode;
+      sellTargetId = id || null;
+      const count = allMode ? cart.length : 1;
+      const total = allMode ? cart.reduce((s, i) => s + (i.mrp * i.qty), 0) : (cart.find(i => i.id === id) || { mrp: 0, qty: 1, mrp: 0 }).mrp;
+      document.getElementById('sellConfirmText').textContent = allMode
+        ? `Sell all ${count} item(s) in cart? They will be moved to Sold Items.`
+        : 'Sell this item? It will be moved to Sold Items.';
+      document.getElementById('sellConfirmSub').textContent = allMode ? `Total value: ₹${total.toFixed(2)}` : '';
+      openModal('sellModal');
+    }
+    function confirmSell() {
+      const todayStr = today.toISOString().split('T')[0];
+      if (sellAllMode) {
+        cart.forEach(it => {
+          sold.unshift({ ...it, soldOn: todayStr, status: 'Sold', soldId: nextSoldId++, returnedQty: 0, remarks: '' });
+          const idx = inventory.findIndex(i => i.id === it.id);
+          if (idx > -1) {
+            inventory[idx].qty -= it.qty;
+            if (inventory[idx].qty <= 0) inventory.splice(idx, 1);
+          }
+        });
+        const n = cart.length;
+        cart = [];
+        toast(`${n} item(s) sold successfully!`, 'success');
+      } else if (sellTargetId) {
+        const it = cart.find(i => i.id === sellTargetId);
+        if (it) {
+          sold.unshift({ ...it, soldOn: todayStr, status: 'Sold', soldId: nextSoldId++, returnedQty: 0, remarks: '' });
+          removeFromCart(sellTargetId);
+          const idx = inventory.findIndex(i => i.id === sellTargetId);
+          if (idx > -1) {
+            inventory[idx].qty -= it.qty;
+            if (inventory[idx].qty <= 0) inventory.splice(idx, 1);
+          }
+        }
+        toast('Item sold!', 'success');
+      }
+      closeModal('sellModal');
+      renderAll();
+    }
+
+    // ─── RETURNS ───
+    let currentReturnId = null;
+    let returnQtyVal = 1;
+    let returnUnitVal = '';
+
+    function initiateReturn(soldId) {
+      const s = sold.find(x => x.soldId === soldId);
+      if (!s) return;
+      currentReturnId = soldId;
+      let maxReturnable = s.qty - (s.returnedQty || 0);
+      if (maxReturnable === 1) {
+        openModal('returnConfirmModal');
+      } else {
+        document.getElementById('inp-return-qty').value = maxReturnable;
+        document.getElementById('inp-return-qty').max = maxReturnable;
+        document.getElementById('inp-return-unit').value = s.unit;
+        openModal('returnQtyModal');
+      }
+    }
+
+    function processReturnQty() {
+      const qty = parseInt(document.getElementById('inp-return-qty').value);
+      const unit = document.getElementById('inp-return-unit').value;
+      const s = sold.find(x => x.soldId === currentReturnId);
+      let maxReturnable = s.qty - (s.returnedQty || 0);
+      if (!qty || qty < 1 || qty > maxReturnable) {
+        document.getElementById('invalidMessageText').textContent = 'Invalid quantity entered. Must be between 1 and ' + maxReturnable + '.';
+        openModal('invalidModal');
+        return;
+      }
+      if (unit !== s.unit) {
+        document.getElementById('invalidMessageText').textContent = 'Unit mismatch. Please select the correct unit: ' + s.unit + '.';
+        openModal('invalidModal');
+        return;
+      }
+      returnQtyVal = qty;
+      returnUnitVal = unit;
+      closeModal('returnQtyModal');
+      openModal('returnConfirmModal');
+    }
+
+    function confirmReturn() {
+      const s = sold.find(x => x.soldId === currentReturnId);
+      if (s) {
+        let maxReturnable = s.qty - (s.returnedQty || 0);
+        let qtyToReturn = (maxReturnable === 1) ? 1 : returnQtyVal;
+
+        let invItem = inventory.find(x => x.id === s.id);
+        if (invItem) {
+          invItem.qty += qtyToReturn;
+        } else {
+          let returnedItem = { ...s, qty: qtyToReturn };
+          delete returnedItem.soldOn;
+          delete returnedItem.status;
+          delete returnedItem.soldId;
+          delete returnedItem.returnedQty;
+          delete returnedItem.remarks;
+          inventory.unshift(returnedItem);
+        }
+
+        s.returnedQty = (s.returnedQty || 0) + qtyToReturn;
+        if (s.returnedQty >= s.qty) {
+          s.status = 'Returned';
+        }
+        toast(qtyToReturn + ' item(s) returned to inventory', 'success');
+      }
+      closeModal('returnConfirmModal');
+      renderAll();
+    }
+
+    // ─── ADD ITEM ───
+    // ─── THEME TOGGLE ───
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.getAttribute('data-theme') === 'dark';
+      body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      const icon = document.getElementById('themeIcon');
+      if (isDark) {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+      } else {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+      }
+    }
+
+    // ─── EDIT ITEM ───
+    let editingId = null;
+    let editingIsSold = false;
+    function openEditModal(id, isSold = false) {
+      document.querySelectorAll('.validation-warning').forEach(el => el.remove());
+      editingIsSold = isSold;
+      let item;
+      if (isSold) {
+        item = sold.find(i => i.soldId === id);
+        editingId = id;
+        document.getElementById('inp-remarks').value = item.remarks || '';
+        document.getElementById('inp-remarks').disabled = false;
+        document.getElementById('inp-qty').disabled = true;
+      } else {
+        item = inventory.find(i => i.id === id);
+        editingId = id;
+        document.getElementById('inp-remarks').value = '';
+        document.getElementById('inp-remarks').disabled = true;
+        document.getElementById('inp-qty').disabled = false;
+      }
+      if (!item) return;
+
+      document.getElementById('inp-name').value = item.name;
+      document.getElementById('inp-mfg').value = item.mfg;
+      document.getElementById('inp-expiry').value = item.expiry;
+      document.getElementById('inp-qty').value = item.qty;
+      document.getElementById('inp-unit').value = item.unit;
+      document.getElementById('inp-mrp').value = item.mrp;
+      document.getElementById('inp-label').value = item.label || '';
+
+      const readonlyFields = ['inp-name', 'inp-mfg', 'inp-expiry', 'inp-mrp', 'inp-label'];
+      if (isSold) {
+        readonlyFields.forEach(fid => document.getElementById(fid).disabled = true);
+      } else {
+        readonlyFields.forEach(fid => document.getElementById(fid).disabled = false);
+      }
+
+      document.querySelector('#addItemModal .modal-title').textContent = isSold ? 'Edit Sold Item' : 'Edit Item';
+      document.querySelector('#addItemModal .btn-submit').textContent = 'Save Changes';
+
+      openModal('addItemModal');
+      switchFormTab('manual');
+    }
+
+    // Ensure "Add Item" button resets modal
+    document.getElementById('addItemBtn').addEventListener('click', () => {
+      document.querySelectorAll('.validation-warning').forEach(el => el.remove());
+      editingId = null;
+      editingIsSold = false;
+      document.querySelector('#addItemModal .modal-title').textContent = 'Add New Item';
+      document.querySelector('#addItemModal .btn-submit').textContent = 'Add to Inventory';
+      ['inp-name', 'inp-mfg', 'inp-expiry', 'inp-mrp', 'inp-label', 'inp-qty'].forEach(id => document.getElementById(id).disabled = false);
+      ['inp-name', 'inp-mfg', 'inp-expiry', 'inp-qty', 'inp-mrp', 'inp-remarks'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('inp-remarks').disabled = true;
+      document.getElementById('inp-label').value = '';
+      document.getElementById('inp-unit').value = 'pcs';
+      openModal('addItemModal');
+    });
+
+    function addItem() {
+      document.querySelectorAll('.validation-warning').forEach(el => el.remove());
+
+      const nameEl = document.getElementById('inp-name');
+      const mfgEl = document.getElementById('inp-mfg');
+      const expiryEl = document.getElementById('inp-expiry');
+      const qtyEl = document.getElementById('inp-qty');
+      const unitEl = document.getElementById('inp-unit');
+      const mrpEl = document.getElementById('inp-mrp');
+      const labelEl = document.getElementById('inp-label');
+      const remarksEl = document.getElementById('inp-remarks');
+
+      const name = nameEl.value.trim();
+      const mfg = mfgEl.value;
+      const expiry = expiryEl.value;
+      const qty = parseInt(qtyEl.value);
+      const unit = unitEl.value;
+      const mrp = parseFloat(mrpEl.value);
+      const label = labelEl.value;
+      const remarks = remarksEl.value;
+
+      if (editingIsSold) {
+        const item = sold.find(i => i.soldId === editingId);
+        if (item) {
+          item.remarks = remarks;
+          item.unit = unit;
+          toast('Sold item remarks updated', 'success');
+        }
+      } else {
+        let hasError = false;
+        const checkField = (el, val, isNum) => {
+          let invalid = false;
+          if (isNum) invalid = isNaN(val) || el.value === '';
+          else invalid = !val;
+          if (invalid) {
+            hasError = true;
+            const warning = document.createElement('div');
+            warning.className = 'validation-warning';
+            warning.style.color = '#e53e3e';
+            warning.style.fontSize = '11px';
+            warning.style.marginTop = '4px';
+            warning.style.fontWeight = '500';
+            warning.textContent = 'Fill to proceed';
+            el.parentNode.insertBefore(warning, el.nextSibling);
+          }
+        };
+
+        checkField(nameEl, name, false);
+        checkField(mfgEl, mfg, false);
+        checkField(qtyEl, qty, true);
+        checkField(mrpEl, mrp, true);
+
+        if (hasError) return;
+
+        if (editingId !== null) {
+          const item = inventory.find(i => i.id === editingId);
+          if (item) {
+            item.name = name; item.mfg = mfg; item.expiry = expiry;
+            item.qty = qty; item.unit = unit; item.mrp = mrp; item.label = label;
+            toast('Item updated successfully', 'success');
+          }
+        } else {
+          inventory.unshift({ id: nextId++, name, mfg, expiry, qty, unit, mrp, label, starred: false, pinned: false, addedDate: today.toISOString().split('T')[0] });
+          toast(name + ' added to inventory', 'success');
+        }
+      }
+
+      closeModal('addItemModal');
+      renderAll();
+      ['inp-name', 'inp-mfg', 'inp-expiry', 'inp-mrp', 'inp-label', 'inp-qty'].forEach(id => document.getElementById(id).disabled = false);
+      ['inp-name', 'inp-mfg', 'inp-expiry', 'inp-qty', 'inp-mrp', 'inp-remarks'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('inp-remarks').disabled = true;
+    }
+
+    function simulateBarcodeScan() {
+      const preview = document.getElementById('barcode-preview');
+      const result = document.getElementById('barcode-result');
+      preview.style.display = 'block';
+      result.innerHTML = '<span style="color:var(--text-3)">Scanning...</span>';
+      setTimeout(() => {
+        document.getElementById('inp-name').value = 'Parle-G Biscuits 200g';
+        document.getElementById('inp-mrp').value = '15';
+        document.getElementById('inp-unit').value = 'pcs';
+        result.innerHTML = `<div>Name: <strong>Parle-G Biscuits 200g</strong></div><div>MRP: <strong>₹15.00</strong></div><div>Unit: <strong>pcs</strong></div>`;
+        switchFormTab('manual');
+        toast('Barcode scanned! Please fill in dates and quantity.', 'success');
+      }, 800);
+    }
+
+    // ─── FILTER ───
+    function applyFilter(el, sort) {
+      document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
+      if (activeSort === sort) { activeSort = null; }
+      else { activeSort = sort; el.classList.add('active'); }
+      document.getElementById('filterMenu').classList.remove('open');
+      renderMain();
+    }
+
+    // ─── MODALS ───
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) closeModal(o.id); }));
+
+    // ─── FORM TABS ───
+    function switchFormTab(tab) {
+      document.getElementById('manual-form').style.display = tab === 'manual' ? '' : 'none';
+      document.getElementById('barcode-form').style.display = tab === 'barcode' ? '' : 'none';
+      document.getElementById('tab-manual').classList.toggle('active', tab === 'manual');
+      document.getElementById('tab-barcode').classList.toggle('active', tab === 'barcode');
+    }
+
+    // ─── SIDEBAR TOGGLE ───
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+
+    // ─── LOGO ───
+    document.getElementById('logoBtn').addEventListener('click', e => {
+      e.preventDefault();
+      switchView('main', document.querySelector('[data-view="main"]'));
+      renderMain();
+    });
+
+    // ─── TOP BUTTONS ───
+    document.getElementById('addItemBtn').addEventListener('click', () => openModal('addItemModal'));
+    document.getElementById('cartNavBtn').addEventListener('click', () => switchView('cart', document.querySelector('[data-view="cart"]')));
+    document.getElementById('notifBtn').addEventListener('click', () => document.getElementById('notifPanel').classList.toggle('open'));
+    document.getElementById('closeNotif').addEventListener('click', () => document.getElementById('notifPanel').classList.remove('open'));
+    document.getElementById('profileBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('profilePanel').classList.toggle('open'); document.getElementById('settingsPanel').classList.remove('open'); });
+    document.getElementById('settingsBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('settingsPanel').classList.toggle('open'); document.getElementById('profilePanel').classList.remove('open'); });
+    document.getElementById('filterBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('filterMenu').classList.toggle('open'); });
+    document.addEventListener('click', () => { document.getElementById('profilePanel').classList.remove('open'); document.getElementById('settingsPanel').classList.remove('open'); document.getElementById('filterMenu').classList.remove('open'); });
+
+    // ─── SIGN OUT ───
+    function signOut() {
+      localStorage.removeItem('db_name');
+      localStorage.removeItem('db_email');
+      localStorage.removeItem('db_shop');
+      localStorage.removeItem('dukaanLastLogin');
+      window.location.href = 'index.html';
+    }
+
+    // ─── SEARCH ───
+    document.getElementById('searchInput').addEventListener('input', renderMain);
+
+    // ─── TOAST ───
+    function toast(msg, type) {
+      const wrap = document.getElementById('toastWrap');
+      const el = document.createElement('div');
+      el.className = 'toast' + (type ? ' ' + type : '');
+      el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>${msg}`;
+      wrap.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    // ─── LABELS ───
+    let selectedColor = '#fc8181';
+    function selectLabelColor(el) {
+      document.querySelectorAll('.color-opt').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedColor = el.getAttribute('data-color');
+      document.getElementById('customLabelColor').value = selectedColor; // sync
+    }
+
+    function selectCustomLabelColor(el) {
+      document.querySelectorAll('.color-opt').forEach(opt => opt.classList.remove('selected'));
+      selectedColor = el.value;
+    }
+
+    function renderLabels() {
+      const list = document.getElementById('labelList');
+      list.innerHTML = '';
+      const select = document.getElementById('inp-label');
+      select.innerHTML = '<option value="">None</option>';
+
+      labels.forEach((lbl, idx) => {
+        // Sidebar item
+        const div = document.createElement('div');
+        div.className = 'nav-item';
+        div.style = 'padding:7px 10px;font-size:13px;display:flex;align-items:center;justify-content:space-between;';
+        div.setAttribute('data-view', 'label-' + lbl.name);
+        div.innerHTML = `<div style="display:flex;align-items:center;gap:6px;" onclick="switchView('label-${lbl.name}',this.parentElement)">
+            <div class="label-color" style="background:${lbl.color}"></div>
+            <span class="sidebar-label">${lbl.name}</span>
+          </div>
+          <button onclick="deleteLabel(${idx})" style="color:var(--text-3);padding:2px;display:flex;align-items:center;" title="Delete Label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>`;
+        list.appendChild(div);
+
+        // Select option
+        const opt = document.createElement('option');
+        opt.value = lbl.name;
+        opt.textContent = lbl.name;
+        select.appendChild(opt);
+      });
+    }
+
+    function saveNewLabel() {
+      const name = document.getElementById('inp-new-label').value.trim();
+      if (!name) { toast('Please enter a label name', 'warning'); return; }
+      if (labels.find(l => l.name.toLowerCase() === name.toLowerCase())) { toast('Label already exists', 'warning'); return; }
+
+      labels.push({ name: name, color: selectedColor });
+      renderLabels();
+      toast('Label "' + name + '" created', 'success');
+      closeModal('addLabelModal');
+      document.getElementById('inp-new-label').value = '';
+    }
+
+    function deleteLabel(idx) {
+      if (confirm('Are you sure you want to delete this label?')) {
+        const lblName = labels[idx].name;
+        labels.splice(idx, 1);
+        // Clear this label from existing inventory
+        inventory.forEach(i => { if (i.label === lblName) i.label = ''; });
+        renderLabels();
+        if (currentView === 'label-' + lblName) switchView('main', document.querySelector('[data-view="main"]'));
+        toast('Label deleted', 'success');
+      }
+    }
+
+    function renderLabelView(name) {
+      const lbl = labels.find(l => l.name === name);
+      if (!lbl) return;
+
+      const container = document.getElementById('dynamicLabelViews');
+      const items = inventory.filter(i => i.label === name);
+      let content = '';
+      if (items.length === 0) {
+        content = `<div style="padding:40px 24px;text-align:center;color:var(--text-3)">No items with ${name} label yet.</div>`;
+      } else {
+        content = `<div class="table-wrap"><table class="inventory-table"><thead><tr><th>#</th><th>Item Name</th><th>Mfg. Date</th><th>Expiry Date</th><th>Quantity</th><th>MRP</th><th>Actions</th></tr></thead><tbody>
+          ${items.map((it, i) => `<tr><td style="color:var(--text-3);font-size:12px">${i + 1}</td><td><span class="item-name">${it.name}</span></td><td style="font-size:12px;color:var(--text-2)">${it.mfg}</td><td style="font-size:12px;color:var(--text-2)">${it.expiry || '-'}</td><td><span class="qty-tag">${it.qty} ${it.unit}</span></td><td><span class="mrp">₹${parseFloat(it.mrp).toFixed(2)}</span></td><td>${actionsBtns(it, 'main')}</td></tr>`).join('')}
+        </tbody></table></div>`;
+      }
+
+      container.innerHTML = `
+        <div class="content-header">
+          <div class="content-title">
+            <div class="label-color" style="background:${lbl.color};width:12px;height:12px;border-radius:50%"></div>Label:
+            ${lbl.name}
+          </div>
+        </div>
+        ${content}
+      `;
+    }
+
+    // ─── INSIGHTS ───
+    function applyInsightsFilter(range, btn) {
+      document.querySelectorAll('#insightsFilters button').forEach(b => {
+        b.style.background = 'transparent';
+        b.style.color = 'var(--text-2)';
+        b.style.borderColor = 'var(--border)';
+      });
+      btn.style.background = 'var(--primary-50)';
+      btn.style.color = 'var(--primary)';
+      btn.style.borderColor = 'var(--primary-100)';
+      insightsFilter = range;
+      renderInsights();
+    }
+
+    function renderInsights() {
+      let filteredSold = sold;
+      if (insightsFilter !== 'all') {
+        const now = new Date();
+        const past = new Date();
+        if (insightsFilter === '24h') past.setHours(past.getHours() - 24);
+        else if (insightsFilter === '3d') past.setDate(past.getDate() - 3);
+        else if (insightsFilter === '1w') past.setDate(past.getDate() - 7);
+        else if (insightsFilter === '2w') past.setDate(past.getDate() - 14);
+        else if (insightsFilter === '1m') past.setMonth(past.getMonth() - 1);
+        else if (insightsFilter === '3m') past.setMonth(past.getMonth() - 3);
+        else if (insightsFilter === '6m') past.setMonth(past.getMonth() - 6);
+        else if (insightsFilter === '1y') past.setFullYear(past.getFullYear() - 1);
+
+        filteredSold = sold.filter(s => new Date(s.soldOn) >= past);
+      }
+
+      const nameMap = {};
+      let totalQty = 0;
+      filteredSold.forEach(s => {
+        if (!nameMap[s.name]) nameMap[s.name] = 0;
+        nameMap[s.name] += s.qty;
+        totalQty += s.qty;
+      });
+
+      const nameArr = Object.keys(nameMap).map(k => ({ name: k, qty: nameMap[k] }));
+      nameArr.sort((a, b) => b.qty - a.qty);
+      const top10 = nameArr.slice(0, 10);
+
+      document.getElementById('insTotalSold').textContent = totalQty;
+      document.getElementById('insMostSold').textContent = nameArr.length ? nameArr[0].name : '-';
+      document.getElementById('insLeastSold').textContent = nameArr.length ? nameArr[nameArr.length - 1].name : '-';
+
+      const labelMap = {};
+      filteredSold.forEach(s => {
+        const lblName = s.label || 'Uncategorized';
+        if (!labelMap[lblName]) labelMap[lblName] = 0;
+        labelMap[lblName] += s.qty;
+      });
+
+      const barCtx = document.getElementById('topItemsChart').getContext('2d');
+      if (topItemsChart) topItemsChart.destroy();
+      topItemsChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: top10.map(i => i.name),
+          datasets: [{
+            label: 'Quantity Sold',
+            data: top10.map(i => i.qty),
+            backgroundColor: '#2b6cb0',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, ticks: { precision: 0 } }
+          }
+        }
+      });
+
+      const pieCtx = document.getElementById('categoryChart').getContext('2d');
+      if (categoryChart) categoryChart.destroy();
+
+      const lblNames = Object.keys(labelMap);
+      const lblData = lblNames.map(k => labelMap[k]);
+      const lblColors = lblNames.map(k => {
+        if (k === 'Uncategorized') return '#e2e8f0';
+        const found = labels.find(l => l.name === k);
+        return found ? found.color : '#e2e8f0';
+      });
+
+      categoryChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+          labels: lblNames,
+          datasets: [{
+            data: lblData,
+            backgroundColor: lblColors,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    // ─── INIT ───
+    (function initProfile() {
+      // Apply Theme
+      const savedTheme = localStorage.getItem('db_theme_intensity');
+      if (savedTheme !== null) {
+        const val = parseInt(savedTheme);
+        const maxL = 90;
+        const minL = 30;
+        const lightness = minL + ((maxL - minL) * (val / 100));
+        document.documentElement.style.setProperty('--primary', `hsl(211, 56%, ${lightness}%)`);
+      }
+
+      const dbName = localStorage.getItem('db_name') || 'Ramesh Kumar';
+      const dbEmail = localStorage.getItem('db_email') || 'ramesh@dukaanbook.in';
+      const dbShop = localStorage.getItem('db_shop') || 'Kumar General Store';
+
+      const initials = dbName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'RK';
+
+      const profileBtn = document.getElementById('profileBtn');
+      if (profileBtn) profileBtn.textContent = initials;
+
+      const profilePanel = document.getElementById('profilePanel');
+      if (profilePanel) {
+        const avatar = profilePanel.querySelector('.profile-avatar');
+        if (avatar) avatar.textContent = initials;
+
+        const nameEl = profilePanel.querySelector('.profile-name');
+        if (nameEl) nameEl.textContent = dbName;
+
+        const emailEl = profilePanel.querySelector('.profile-email');
+        if (emailEl) emailEl.textContent = dbEmail;
+
+        const shopEl = emailEl.nextElementSibling;
+        const dbCategory = localStorage.getItem('db_category') || 'General Store';
+        if (shopEl) shopEl.textContent = 'Shop: ' + dbShop + ' (' + dbCategory + ')';
+      }
+    })();
+
+    renderLabels();
+    renderAll();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DukaanBook — Shopkeeper Portal</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ── CSS Variables ── */
+        :root {
+            --bg: #f0f6ff;
+            --surface: #ffffff;
+            --surface2: #e8f1fd;
+            --border: #c3d9f7;
+            --accent: #2563eb;
+            --accent-soft: #dbeafe;
+            --accent2: #0ea5e9;
+            --text-h: #1a2b4a;
+            --text: #334155;
+            --text-muted: #64748b;
+            --input-bg: #f8faff;
+            --input-border: #bfd3f5;
+            --shadow: 0 4px 24px rgba(37, 99, 235, 0.10);
+            --shadow-lg: 0 8px 40px rgba(37, 99, 235, 0.16);
+            --success: #16a34a;
+            --error: #dc2626;
+            --warn: #d97706;
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface2: #263348;
+            --border: #334155;
+            --accent: #3b82f6;
+            --accent-soft: #1e3a5f;
+            --accent2: #38bdf8;
+            --text-h: #e2eaf7;
+            --text: #cbd5e1;
+            --text-muted: #94a3b8;
+            --input-bg: #162032;
+            --input-border: #334155;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            transition: background 0.35s, color 0.35s;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ── Background decoration ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 10% 10%, rgba(37, 99, 235, 0.10) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 90% 85%, rgba(14, 165, 233, 0.09) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        [data-theme="dark"] body::before {
+            background:
+                radial-gradient(ellipse 60% 40% at 10% 10%, rgba(59, 130, 246, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 90% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+        }
+
+        /* ── Theme toggle ── */
+        .theme-toggle {
+            position: fixed;
+            top: 18px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 40px;
+            padding: 6px 14px 6px 10px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border 0.3s;
+            user-select: none;
+        }
+
+        .theme-toggle span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: 'Noto Sans', sans-serif;
+        }
+
+        .toggle-track {
+            width: 38px;
+            height: 21px;
+            background: var(--accent-soft);
+            border-radius: 99px;
+            border: 1.5px solid var(--accent);
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle-thumb {
+            width: 15px;
+            height: 15px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s, background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+
+        [data-theme="dark"] .toggle-thumb {
+            transform: translateX(17px);
+        }
+
+        .toggle-icon {
+            font-size: 14px;
+        }
+
+        /* ── Card wrapper ── */
+        .card-wrap {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* ── Brand header ── */
+        .brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            border-radius: 20px;
+            font-size: 30px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.30);
+        }
+
+        .brand-name {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-h);
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+
+        .brand-name span {
+            color: var(--accent);
+        }
+
+        .brand-tagline {
+            margin-top: 5px;
+            font-size: 0.93rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* ── Main card ── */
+        .card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 36px 36px 32px;
+            transition: background 0.35s, border 0.35s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 50px rgba(37, 99, 235, 0.22);
+        }
+
+        [data-theme="dark"] .card:hover {
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ── Tab switch ── */
+        .tab-row {
+            display: flex;
+            background: var(--surface2);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin-bottom: 28px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            border: none;
+            background: transparent;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        /* ── Section title ── */
+        .section-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: var(--text-h);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title .step-badge {
+            width: 26px;
+            height: 26px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        /* ── Form elements ── */
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 13px;
+            font-size: 17px;
+            pointer-events: none;
+            color: var(--text-muted);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="password"] {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px 12px 40px;
+            font-size: 1rem;
+            font-family: 'Noto Sans', sans-serif;
+            color: var(--text);
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s, background 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+            background: var(--surface);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        /* inline OTP + send button */
+        .otp-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .otp-row input {
+            flex: 1;
+        }
+
+        .send-btn {
+            white-space: nowrap;
+            padding: 11px 16px;
+            background: var(--accent-soft);
+            border: 1.5px solid var(--accent);
+            color: var(--accent);
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.86rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            font-family: 'Noto Sans', sans-serif;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ── Primary button ── */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.07rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            box-shadow: 0 3px 14px rgba(37, 99, 235, 0.28);
+            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.93;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.30);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--accent);
+            border: 1.5px solid var(--accent);
+            box-shadow: none;
+            background: transparent;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--accent-soft);
+        }
+
+        /* ── Divider ── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0;
+            color: var(--text-muted);
+            font-size: 0.83rem;
+            font-weight: 600;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-top: 1.5px solid var(--border);
+        }
+
+        /* ── Method selector ── */
+        .method-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .method-btn {
+            flex: 1;
+            padding: 11px 8px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface2);
+            color: var(--text);
+            font-family: 'Noto Sans', sans-serif;
+            font-size: 0.93rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: border 0.2s, background 0.2s, color 0.2s;
+        }
+
+        .method-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .method-btn .mico {
+            font-size: 18px;
+        }
+
+        /* ── Alert boxes ── */
+        .alert {
+            border-radius: var(--radius-sm);
+            padding: 11px 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .alert-info {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .alert-warn {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        [data-theme="dark"] .alert-warn {
+            background: #2d1f00;
+            color: #fcd34d;
+            border-color: #856c00;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        [data-theme="dark"] .alert-success {
+            background: #052e16;
+            color: #4ade80;
+            border-color: #166534;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        [data-theme="dark"] .alert-error {
+            background: #2d0707;
+            color: #f87171;
+            border-color: #7f1d1d;
+        }
+
+        /* ── Verification choice ── */
+        .verify-choice {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .verify-option {
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: border 0.2s, background 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--surface2);
+        }
+
+        .verify-option:hover,
+        .verify-option.selected {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .verify-option input[type="radio"] {
+            accent-color: var(--accent);
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .verify-option .vo-text {
+            font-size: 0.93rem;
+        }
+
+        .verify-option .vo-title {
+            font-weight: 700;
+            color: var(--text-h);
+        }
+
+        .verify-option .vo-sub {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ── Upload zone ── */
+        .upload-zone {
+            border: 2px dashed var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 28px 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: border 0.2s, background 0.2s;
+            background: var(--input-bg);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.has-file {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .upload-zone .uz-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone .uz-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        /* ── Progress steps ── */
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 26px;
+            gap: 0;
+        }
+
+        .pb-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .pb-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2.5px solid var(--border);
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            transition: all 0.3s;
+            z-index: 1;
+        }
+
+        .pb-dot.done {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .pb-dot.active {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .pb-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 600;
+            text-align: center;
+            max-width: 60px;
+        }
+
+        .pb-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            margin: 0 4px;
+            margin-bottom: 20px;
+            min-width: 30px;
+            transition: background 0.3s;
+        }
+
+        .pb-line.done {
+            background: var(--accent);
+        }
+
+        /* ── Countdown ── */
+        .countdown-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-radius: 99px;
+            padding: 3px 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid var(--accent);
+        }
+
+        /* ── Completed state ── */
+        .complete-screen {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+
+        .complete-icon {
+            font-size: 56px;
+            margin-bottom: 14px;
+            animation: pop 0.5s ease;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .complete-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-h);
+            margin-bottom: 8px;
+        }
+
+        .complete-sub {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* ── Hidden utility ── */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 500px) {
+            .card {
+                padding: 24px 18px 22px;
+            }
+
+            .brand-name {
+                font-size: 1.6rem;
+            }
+        }
+
+        /* ── Floating Sketches ── */
+        .sketch {
+            position: absolute;
+            z-index: 0;
+            color: var(--accent);
+            opacity: 0.15;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        [data-theme="dark"] .sketch {
+            opacity: 0.1;
+        }
+
+        .sketch-1 {
+            top: 8%;
+            left: 5%;
+            --rot: -15deg;
+            animation-delay: 0s;
+        }
+
+        .sketch-2 {
+            bottom: 10%;
+            right: 4%;
+            --rot: 20deg;
+            animation-delay: -2s;
+        }
+
+        .sketch-3 {
+            top: 10%;
+            right: 6%;
+            --rot: 10deg;
+            animation-delay: -1s;
+        }
+
+        .sketch-4 {
+            bottom: 12%;
+            left: 4%;
+            --rot: -20deg;
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(var(--rot));
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(calc(var(--rot) + 5deg));
+            }
+        }
+
+        /* ── Fade in ── */
+        .fade {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── spinner ── */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Floating Sketches -->
+    <svg class="sketch sketch-1" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+    </svg>
+    <svg class="sketch sketch-2" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 19l7-7 3 3-7 7-3-3z" />
+        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+        <path d="M2 2l7.586 7.586" />
+        <circle cx="11" cy="11" r="2" />
+    </svg>
+    <svg class="sketch sketch-3" width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+        <line x1="8" y1="6" x2="16" y2="6" />
+        <line x1="16" y1="14" x2="16" y2="14.01" />
+        <line x1="16" y1="10" x2="16" y2="10.01" />
+        <line x1="12" y1="10" x2="12" y2="10.01" />
+        <line x1="12" y1="14" x2="12" y2="14.01" />
+        <line x1="8" y1="10" x2="8" y2="10.01" />
+        <line x1="8" y1="14" x2="8" y2="14.01" />
+        <line x1="8" y1="18" x2="16" y2="18" />
+    </svg>
+    <svg class="sketch sketch-4" width="110" height="110" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+    </svg>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="toggle-icon">☀️</span>
+        <div class="toggle-track">
+            <div class="toggle-thumb" id="toggleThumb">🌙</div>
+        </div>
+        <span id="themeLabel">Light</span>
+    </button>
+
+    <div class="card-wrap">
+        <!-- Brand -->
+        <div class="brand">
+            <div class="brand-logo">🏪</div>
+            <div class="brand-name">Dukaan<span>Book</span></div>
+            <div class="brand-tagline">आपकी दुकान, आपका हिसाब — Your Shop, Your Record</div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="card" id="mainCard">
+
+            <!-- ════════ SCREEN 1 : AUTH ════════ -->
+            <div id="screenAuth" class="fade">
+                <div class="tab-row">
+                    <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">🔑 Login</button>
+                    <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">📝 Sign Up</button>
+                </div>
+
+                <!-- Method chooser -->
+                <div class="method-row">
+                    <button class="method-btn active" id="methodPhone" onclick="switchMethod('phone')">
+                        <span class="mico">📱</span> Phone
+                    </button>
+                    <button class="method-btn" id="methodEmail" onclick="switchMethod('email')">
+                        <span class="mico">📧</span> Email
+                    </button>
+                    <button class="method-btn" id="methodGuest" onclick="switchMethod('guest')">
+                        <span class="mico">👤</span> Guest
+                    </button>
+                </div>
+
+                <!-- Inactivity warning (shown only on login tab) -->
+                <div id="inactivityAlert" class="alert alert-warn hidden">
+                    ⏰ आपने 20 दिनों से login नहीं किया। कृपया फिर से verify करें। <br>
+                    <small>(You have not logged in for 20+ days. Please verify again.)</small>
+                </div>
+
+                <!-- Phone method -->
+                <div id="phoneFields">
+                    <div class="field">
+                        <label>📱 Phone Number (मोबाइल नंबर)</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">🇮🇳</span>
+                            <input type="tel" id="phoneInput" placeholder="+91  XXXXX XXXXX" maxlength="13" />
+                        </div>
+                    </div>
+                    <div class="field" id="phoneOtpField" style="display:none">
+                        <label>🔐 OTP (एकबारगी पासवर्ड)</label>
+                        <div class="otp-row">
+                            <div class="input-wrap" style="flex:1">
+                                <span class="input-icon">🔢</span>
+                                <input type="number" id="phoneOtpInput" placeholder="Enter 6-digit OTP" />
+                            </div>
+                            <button class="send-btn" id="resendPhoneOtp" onclick="resendOtp('phone')" disabled>Resend
+                                <span id="timerPhone"></span></button>
+                        </div>
+                    </div>
+                    <button class="send-btn" id="sendPhoneOtpBtn"
+                        style="width:100%;padding:12px;font-size:1rem;margin-bottom:12px;"
+                        onclick="sendOtp('phone')">Send OTP
+                        →</button>
+                    <div id="phoneOtpSent" class="alert alert-success hidden">✅ OTP भेज दिया गया! (OTP sent to your
+                        mobile)</div>
+                    <button class="btn-primary hidden" id="verifyPhoneBtn" onclick="verifyPhone()">Verify & Continue
+                        →</button>
+                </div>
+
+                <!-- Email method -->
+                <div id="emailFields" style="display:none">
+                    <div class="field">
+                        <label>📧 Gmail / Email Address</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">✉️</span>
+                            <input type="email" id="emailInput" placeholder="yourname@gmail.com" />
+                        </div>
+                    </div>
+                    <div class="field" id="emailOtpField" style="display:none">
+                        <label>🔐 OTP (ईमेल पर भेजा गया)</label>
+                        <div class="otp-row">
+                            <div class="input-wrap" style="flex:1">
+                                <span class="input-icon">🔢</span>
+                                <input type="number" id="emailOtpInput" placeholder="Enter 6-digit OTP" />
+                            </div>
+                            <button class="send-btn" id="resendEmailOtp" onclick="resendOtp('email')" disabled>Resend
+                                <span id="timerEmail"></span></button>
+                        </div>
+                    </div>
+                    <button class="send-btn" id="sendEmailOtpBtn"
+                        style="width:100%;padding:12px;font-size:1rem;margin-bottom:12px;"
+                        onclick="sendOtp('email')">Send OTP
+                        →</button>
+                    <div id="emailOtpSent" class="alert alert-success hidden">✅ OTP आपके ईमेल पर भेजा गया! (OTP sent to
+                        your
+                        email)</div>
+                    <button class="btn-primary hidden" id="verifyEmailBtn" onclick="verifyEmail()">Verify & Continue
+                        →</button>
+                </div>
+
+                <!-- Guest method -->
+                <div id="guestFields" style="display:none">
+                    <div class="field">
+                        <label>👤 Shopkeeper Name (दुकानदार का नाम)</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="guestNameInput" placeholder="e.g. Ram Kumar" />
+                        </div>
+                    </div>
+                    <button class="btn-primary" id="loginGuestBtn" onclick="loginGuest()">Continue as Guest
+                        →</button>
+                </div>
+
+                <div id="authError" class="alert alert-error hidden">❌ <span id="authErrorMsg">Invalid OTP. Please try
+                        again.</span></div>
+            </div>
+
+            <!-- ════════ SCREEN 2 : PROFILE (Sign-up only) ════════ -->
+            <div id="screenProfile" class="fade hidden">
+                <div class="progress-bar">
+                    <div class="pb-step">
+                        <div class="pb-dot done">✓</div>
+                        <div class="pb-label">Verify</div>
+                    </div>
+                    <div class="pb-line done"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot active">2</div>
+                        <div class="pb-label">Profile</div>
+                    </div>
+                    <div class="pb-line"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot">3</div>
+                        <div class="pb-label">Business</div>
+                    </div>
+                    <div class="pb-line"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot">4</div>
+                        <div class="pb-label">Done</div>
+                    </div>
+                </div>
+
+                <div class="section-title"><span class="step-badge">2</span> Your Profile (आपकी जानकारी)</div>
+
+                <div class="field">
+                    <label>👤 Full Name (पूरा नाम)</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="nameInput" placeholder="Ram Kumar Sharma" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label>🏪 Shop Name (दुकान का नाम)</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🏪</span>
+                        <input type="text" id="shopInput" placeholder="Sharma General Store" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label>📍 City / Town (शहर / कस्बा)</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">📍</span>
+                        <input type="text" id="cityInput" placeholder="e.g. Kanpur, UP" />
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="goToBusinessVerify()">Next — Business Verification →</button>
+            </div>
+
+            <!-- ════════ SCREEN 3 : BUSINESS VERIFICATION ════════ -->
+            <div id="screenBusiness" class="fade hidden">
+                <div class="progress-bar">
+                    <div class="pb-step">
+                        <div class="pb-dot done">✓</div>
+                        <div class="pb-label">Verify</div>
+                    </div>
+                    <div class="pb-line done"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot done">✓</div>
+                        <div class="pb-label">Profile</div>
+                    </div>
+                    <div class="pb-line done"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot active">3</div>
+                        <div class="pb-label">Business</div>
+                    </div>
+                    <div class="pb-line"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot">4</div>
+                        <div class="pb-label">Done</div>
+                    </div>
+                </div>
+
+                <div class="section-title"><span class="step-badge">3</span> Business Verification (व्यवसाय सत्यापन)
+                </div>
+
+                <div class="alert alert-info">
+                    ℹ️ Please provide one of the following to verify your business. यह केवल एक बार होगा।
+                </div>
+
+                <div class="verify-choice">
+                    <label class="verify-option" id="optAadhaar" onclick="selectVerify('aadhaar')">
+                        <input type="radio" name="verifyType" value="aadhaar" id="radioAadhaar" />
+                        <div class="vo-text">
+                            <div class="vo-title">🪪 Aadhaar Card Number</div>
+                            <div class="vo-sub">आधार नंबर दें — OTP आपके रजिस्टर्ड मोबाइल पर आएगा</div>
+                        </div>
+                    </label>
+                    <label class="verify-option" id="optTrade" onclick="selectVerify('trade')">
+                        <input type="radio" name="verifyType" value="trade" id="radioTrade" />
+                        <div class="vo-text">
+                            <div class="vo-title">📄 Trade License (व्यापार लाइसेंस)</div>
+                            <div class="vo-sub">अपने ट्रेड लाइसेंस की फोटोकॉपी अपलोड करें</div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Aadhaar sub-form -->
+                <div id="aadhaarForm" style="display:none">
+                    <div class="field">
+                        <label>🪪 Aadhaar Number (आधार नंबर)</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">🔢</span>
+                            <input type="text" id="aadhaarInput" placeholder="XXXX XXXX XXXX" maxlength="14"
+                                oninput="formatAadhaar(this)" />
+                        </div>
+                    </div>
+                    <div id="aadhaarOtpSection" style="display:none">
+                        <div class="alert alert-success">✅ OTP sent to Aadhaar-linked mobile!</div>
+                        <div class="field">
+                            <label>🔐 Enter OTP (आधार OTP)</label>
+                            <div class="otp-row">
+                                <div class="input-wrap" style="flex:1">
+                                    <span class="input-icon">🔢</span>
+                                    <input type="number" id="aadhaarOtpInput" placeholder="6-digit OTP" />
+                                </div>
+                                <button class="send-btn" onclick="resendOtp('aadhaar')" id="resendAadhaarOtp"
+                                    disabled>Resend <span id="timerAadhaar"></span></button>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="verifyAadhaar()">Verify Aadhaar →</button>
+                    </div>
+                    <div id="aadhaarOtpBtnWrap">
+                        <button class="btn-primary" id="sendAadhaarOtpBtn" onclick="sendAadhaarOtp()">Send OTP to
+                            Aadhaar Mobile
+                            →</button>
+                    </div>
+                </div>
+
+                <!-- Trade license sub-form -->
+                <div id="tradeForm" style="display:none">
+                    <div class="field">
+                        <label>📄 Upload Trade License Photo</label>
+                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('tradeFile').click()">
+                            <div class="uz-icon">📂</div>
+                            <div class="uz-text" id="uploadZoneText">Click to upload JPG, PNG or PDF (max 5 MB)</div>
+                            <input type="file" id="tradeFile" accept="image/*,.pdf" onchange="onFileSelect(this)" />
+                        </div>
+                    </div>
+                    <button class="btn-primary" id="submitTradeBtn" onclick="submitTrade()">Submit Trade License
+                        →</button>
+                </div>
+
+                <div id="businessError" class="alert alert-error hidden">❌ <span id="businessErrorMsg"></span></div>
+            </div>
+
+            <!-- ════════ SCREEN 4 : SUCCESS ════════ -->
+            <div id="screenDone" class="fade hidden">
+                <div class="progress-bar">
+                    <div class="pb-step">
+                        <div class="pb-dot done">✓</div>
+                        <div class="pb-label">Verify</div>
+                    </div>
+                    <div class="pb-line done"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot done">✓</div>
+                        <div class="pb-label">Profile</div>
+                    </div>
+                    <div class="pb-line done"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot done">✓</div>
+                        <div class="pb-label">Business</div>
+                    </div>
+                    <div class="pb-line done"></div>
+                    <div class="pb-step">
+                        <div class="pb-dot done">✓</div>
+                        <div class="pb-label">Done</div>
+                    </div>
+                </div>
+                <div class="complete-screen">
+                    <div class="complete-icon">🎉</div>
+                    <div class="complete-title">Registration Complete!</div>
+                    <div class="complete-sub">
+                        बधाई हो! आपकी दुकान DukaanBook पर रजिस्टर हो गई है।<br>
+                        <small>Congratulations! Your shop is now registered.</small><br><br>
+                        अब आप अपने products की मात्रा, निर्माण तिथि<br>
+                        और एक्सपायरी डेट का रिकॉर्ड रख सकते हैं।<br>
+                        <small>You can now track quantity, manufacturing &amp; expiry dates.</small>
+                    </div>
+                    <br>
+                    <button class="btn-primary" onclick="goToDashboard()">🏪 Go to My Shop Dashboard →</button>
+                </div>
+            </div>
+
+            <!-- ════════ SCREEN 5 : DASHBOARD PLACEHOLDER ════════ -->
+            <div id="screenDash" class="fade hidden">
+                <div class="section-title">🏪 Welcome, <span id="dashName"
+                        style="color:var(--accent)">Shopkeeper</span>!</div>
+                <div class="alert alert-success">✅ आप सफलतापूर्वक login हो गए हैं। (You are now logged in.)</div>
+                <p style="color:var(--text-muted);font-size:0.93rem;margin:10px 0 18px;">
+                    Your product inventory dashboard is loading…<br>
+                    <small>यहाँ आप products की quantity, manufacturing date और expiry date manage करेंगे।</small>
+                </p>
+                <div
+                    style="background:var(--surface2);border-radius:var(--radius-sm);padding:18px;border:1.5px solid var(--border);margin-bottom:14px;">
+                    <div
+                        style="font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;color:var(--text-h);margin-bottom:10px;">
+                        📦 Quick Summary</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div
+                            style="background:var(--surface);border-radius:8px;padding:12px;border:1px solid var(--border);text-align:center;">
+                            <div style="font-size:1.6rem;font-weight:800;color:var(--accent)">0</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted)">Products</div>
+                        </div>
+                        <div
+                            style="background:var(--surface);border-radius:8px;padding:12px;border:1px solid var(--border);text-align:center;">
+                            <div style="font-size:1.6rem;font-weight:800;color:#dc2626">0</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted)">Expiring Soon</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary btn-secondary" onclick="logout()">🚪 Logout</button>
+            </div>
+
+        </div><!-- .card -->
+    </div><!-- .card-wrap -->
+
+    <script>
+        // ════════ THEME ════════
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
+            document.getElementById('toggleThumb').textContent = isDark ? '🌙' : '☀️';
+            localStorage.setItem('dukaanTheme', isDark ? 'light' : 'dark');
+        }
+        (function initTheme() {
+            const saved = localStorage.getItem('dukaanTheme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            document.getElementById('themeLabel').textContent = saved === 'dark' ? 'Dark' : 'Light';
+            document.getElementById('toggleThumb').textContent = saved === 'dark' ? '☀️' : '🌙';
+
+            // Apply Theme Intensity
+            const savedTheme = localStorage.getItem('db_theme_intensity');
+            if (savedTheme !== null) {
+                const val = parseInt(savedTheme);
+                const maxL = 90;
+                const minL = 30;
+                const lightness = minL + ((maxL - minL) * (val / 100));
+                document.documentElement.style.setProperty('--primary', `hsl(211, 56%, ${lightness}%)`);
+            }
+        })();
+
+        // ════════ INACTIVITY CHECK (20 days) ════════
+        const INACTIVE_DAYS = 20;
+        function checkInactivity() {
+            const last = localStorage.getItem('dukaanLastLogin');
+            if (!last) return false;
+            const diff = (Date.now() - parseInt(last)) / (1000 * 60 * 60 * 24);
+            return diff > INACTIVE_DAYS;
+        }
+        function updateLastLogin() {
+            localStorage.setItem('dukaanLastLogin', Date.now().toString());
+        }
+
+        // ════════ STATE ════════
+        let currentMethod = 'phone';
+        let currentTab = 'login';
+        let otpTimers = {};
+
+        // ════════ TAB SWITCH ════════
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+            document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+
+            // Show inactivity warning only on login if applicable
+            const alert = document.getElementById('inactivityAlert');
+            if (tab === 'login' && checkInactivity()) {
+                alert.classList.remove('hidden');
+            } else {
+                alert.classList.add('hidden');
+            }
+        }
+
+        // ════════ METHOD SWITCH ════════
+        function switchMethod(method) {
+            currentMethod = method;
+            document.getElementById('methodPhone').classList.toggle('active', method === 'phone');
+            document.getElementById('methodEmail').classList.toggle('active', method === 'email');
+            document.getElementById('methodGuest').classList.toggle('active', method === 'guest');
+            document.getElementById('phoneFields').style.display = method === 'phone' ? '' : 'none';
+            document.getElementById('emailFields').style.display = method === 'email' ? '' : 'none';
+            document.getElementById('guestFields').style.display = method === 'guest' ? '' : 'none';
+            clearError('authError');
+        }
+
+        // ════════ OTP SENDING (simulated) ════════
+        function sendOtp(method) {
+            clearError('authError');
+            if (method === 'phone') {
+                const ph = document.getElementById('phoneInput').value.trim();
+                if (!ph || ph.replace(/\D/g, '').length < 10) {
+                    showError('authError', 'कृपया valid phone number दर्ज करें। (Please enter a valid phone number)');
+                    return;
+                }
+                document.getElementById('phoneOtpField').style.display = '';
+                document.getElementById('phoneOtpSent').classList.remove('hidden');
+                document.getElementById('verifyPhoneBtn').classList.remove('hidden');
+                document.getElementById('sendPhoneOtpBtn').style.display = 'none';
+                startResendTimer('phone', 'timerPhone', 'resendPhoneOtp');
+            } else {
+                const em = document.getElementById('emailInput').value.trim();
+                if (!em || !em.includes('@')) {
+                    showError('authError', 'कृपया valid email दर्ज करें। (Please enter a valid email address)');
+                    return;
+                }
+                document.getElementById('emailOtpField').style.display = '';
+                document.getElementById('emailOtpSent').classList.remove('hidden');
+                document.getElementById('verifyEmailBtn').classList.remove('hidden');
+                document.getElementById('sendEmailOtpBtn').style.display = 'none';
+                startResendTimer('email', 'timerEmail', 'resendEmailOtp');
+            }
+        }
+
+        function resendOtp(method) {
+            if (method === 'phone') startResendTimer('phone', 'timerPhone', 'resendPhoneOtp');
+            else if (method === 'email') startResendTimer('email', 'timerEmail', 'resendEmailOtp');
+            else if (method === 'aadhaar') startResendTimer('aadhaar', 'timerAadhaar', 'resendAadhaarOtp');
+            alert('✅ नया OTP भेज दिया गया (Demo: New OTP sent!)');
+        }
+
+        function startResendTimer(key, timerElId, btnId) {
+            let secs = 30;
+            const btn = document.getElementById(btnId);
+            const timerEl = document.getElementById(timerElId);
+            btn.disabled = true;
+            timerEl.textContent = `(${secs}s)`;
+            clearInterval(otpTimers[key]);
+            otpTimers[key] = setInterval(() => {
+                secs--;
+                timerEl.textContent = secs > 0 ? `(${secs}s)` : '';
+                if (secs <= 0) {
+                    clearInterval(otpTimers[key]);
+                    btn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // ════════ VERIFY PHONE ════════
+        function verifyPhone() {
+            const otp = document.getElementById('phoneOtpInput').value.trim();
+            if (!otp || otp.length < 4) {
+                showError('authError', 'कृपया OTP दर्ज करें। (Please enter the OTP)');
+                return;
+            }
+            // Demo: any 6-digit accepted
+            clearError('authError');
+            updateLastLogin();
+            
+            const ph = document.getElementById('phoneInput').value.trim();
+            localStorage.setItem('db_email', ph);
+            localStorage.setItem('db_is_guest', 'false');
+            if (currentTab === 'login') {
+                localStorage.setItem('db_name', 'Shopkeeper');
+                localStorage.setItem('db_shop', 'My Shop');
+            }
+
+            if (currentTab === 'signup') {
+                showScreen('screenProfile');
+            } else {
+                showDashboard();
+            }
+        }
+
+        // ════════ VERIFY EMAIL ════════
+        function verifyEmail() {
+            const otp = document.getElementById('emailOtpInput').value.trim();
+            if (!otp || otp.length < 4) {
+                showError('authError', 'कृपया OTP दर्ज करें। (Please enter the OTP)');
+                return;
+            }
+            clearError('authError');
+            updateLastLogin();
+            
+            const em = document.getElementById('emailInput').value.trim();
+            localStorage.setItem('db_email', em);
+            localStorage.setItem('db_is_guest', 'false');
+            if (currentTab === 'login') {
+                localStorage.setItem('db_name', 'Shopkeeper');
+                localStorage.setItem('db_shop', 'My Shop');
+            }
+
+            if (currentTab === 'signup') {
+                showScreen('screenProfile');
+            } else {
+                showDashboard();
+            }
+        }
+
+        // ════════ LOGIN GUEST ════════
+        function loginGuest() {
+            const name = document.getElementById('guestNameInput').value.trim();
+            if (!name) {
+                showError('authError', 'कृपया अपना नाम दर्ज करें। (Please enter your name)');
+                return;
+            }
+            clearError('authError');
+            updateLastLogin();
+            
+            localStorage.setItem('db_name', name);
+            localStorage.setItem('db_email', 'Guest User');
+            localStorage.setItem('db_shop', name + "'s Store");
+            localStorage.setItem('db_is_guest', 'true');
+            localStorage.removeItem('db_verified');
+
+            document.getElementById('dashName').textContent = name + " (Guest)";
+            showDashboard();
+        }
+
+        // ════════ PROFILE SCREEN ════════
+        function goToBusinessVerify() {
+            const name = document.getElementById('nameInput').value.trim();
+            const shop = document.getElementById('shopInput').value.trim();
+            if (!name || !shop) {
+                alert('कृपया नाम और दुकान का नाम दर्ज करें। (Please enter your name and shop name)');
+                return;
+            }
+            localStorage.setItem('db_name', name);
+            localStorage.setItem('db_shop', shop);
+            
+            document.getElementById('dashName').textContent = name;
+            showScreen('screenBusiness');
+        }
+
+        // ════════ BUSINESS VERIFICATION ════════
+        function selectVerify(type) {
+            document.getElementById('optAadhaar').classList.toggle('selected', type === 'aadhaar');
+            document.getElementById('optTrade').classList.toggle('selected', type === 'trade');
+            document.getElementById('radioAadhaar').checked = type === 'aadhaar';
+            document.getElementById('radioTrade').checked = type === 'trade';
+            document.getElementById('aadhaarForm').style.display = type === 'aadhaar' ? '' : 'none';
+            document.getElementById('tradeForm').style.display = type === 'trade' ? '' : 'none';
+            clearError('businessError');
+        }
+
+        function formatAadhaar(inp) {
+            let v = inp.value.replace(/\D/g, '').substring(0, 12);
+            v = v.replace(/(\d{4})(\d{4})(\d{4})/, '$1 $2 $3');
+            inp.value = v;
+        }
+
+        function sendAadhaarOtp() {
+            const aNum = document.getElementById('aadhaarInput').value.replace(/\s/g, '');
+            if (aNum.length !== 12) {
+                showError('businessError', 'कृपया 12 अंकों का Aadhaar number दर्ज करें।');
+                return;
+            }
+            clearError('businessError');
+            document.getElementById('aadhaarOtpSection').style.display = '';
+            document.getElementById('aadhaarOtpBtnWrap').style.display = 'none';
+            startResendTimer('aadhaar', 'timerAadhaar', 'resendAadhaarOtp');
+        }
+
+        function verifyAadhaar() {
+            const otp = document.getElementById('aadhaarOtpInput').value.trim();
+            if (!otp || otp.length < 4) {
+                showError('businessError', 'कृपया Aadhaar OTP दर्ज करें।');
+                return;
+            }
+            clearError('businessError');
+            localStorage.setItem('db_verified', 'aadhaar');
+            showScreen('screenDone');
+        }
+
+        function onFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size too large. Max 5 MB allowed.');
+                input.value = '';
+                return;
+            }
+            document.getElementById('uploadZone').classList.add('has-file');
+            document.getElementById('uploadZoneText').textContent = '✅ ' + file.name;
+        }
+
+        function submitTrade() {
+            const f = document.getElementById('tradeFile').files[0];
+            if (!f) {
+                showError('businessError', 'कृपया Trade License upload करें।');
+                return;
+            }
+            clearError('businessError');
+            localStorage.setItem('db_verified', 'trade');
+            showScreen('screenDone');
+        }
+
+        // ════════ SCREEN MANAGEMENT ════════
+        function showScreen(id) {
+            ['screenAuth', 'screenProfile', 'screenBusiness', 'screenDone', 'screenDash'].forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.remove('fade');
+                void target.offsetWidth;
+                target.classList.add('fade');
+            }
+        }
+
+        function showDashboard() {
+            window.location.href = 'DukaanBook_profile.html';
+        }
+
+        function goToDashboard() {
+            showDashboard();
+        }
+
+        function logout() {
+            showScreen('screenAuth');
+            switchTab('login');
+        }
+
+        // ════════ ERROR HELPERS ════════
+        function showError(elId, msg) {
+            const el = document.getElementById(elId);
+            const msgEl = document.getElementById(elId + 'Msg');
+            if (msgEl) msgEl.textContent = msg;
+            else if (el) el.innerHTML = '❌ ' + msg;
+            if (el) el.classList.remove('hidden');
+        }
+        function clearError(elId) {
+            const el = document.getElementById(elId);
+            if (el) el.classList.add('hidden');
+        }
+
+        // ════════ INIT ════════
+        (function init() {
+            if (checkInactivity()) {
+                document.getElementById('inactivityAlert').classList.remove('hidden');
+            }
+        })();
+    </script>
+</body>
+
+</html>
